@@ -470,19 +470,25 @@
 
             container.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
-                        <div class="p-4 bg-blue-100 text-blue-600 rounded-full"><i data-lucide="users"></i></div>
+                    <!-- Contractors Card -->
+                    <div onclick="router('contractors')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all flex items-center gap-4 group">
+                        <div class="p-4 bg-blue-100 text-blue-600 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="users"></i></div>
                         <div><p class="text-sm text-slate-500 font-bold uppercase">Contractors</p><h3 class="text-3xl font-bold text-slate-800">${totalC}</h3></div>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
-                        <div class="p-4 bg-green-100 text-green-600 rounded-full"><i data-lucide="dollar-sign"></i></div>
+                    
+                    <!-- Payments Card -->
+                    <div onclick="router('payments')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-green-300 transition-all flex items-center gap-4 group">
+                        <div class="p-4 bg-green-100 text-green-600 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="dollar-sign"></i></div>
                         <div><p class="text-sm text-slate-500 font-bold uppercase">YTD Payout (${year})</p><h3 class="text-3xl font-bold text-slate-800">$${ytd.toLocaleString()}</h3></div>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
-                        <div class="p-4 bg-purple-100 text-purple-600 rounded-full"><i data-lucide="file-check"></i></div>
+
+                    <!-- Reports/W9 Card -->
+                    <div onclick="router('reports')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-purple-300 transition-all flex items-center gap-4 group">
+                        <div class="p-4 bg-purple-100 text-purple-600 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="file-check"></i></div>
                         <div><p class="text-sm text-slate-500 font-bold uppercase">W9s on File</p><h3 class="text-3xl font-bold text-slate-800">${w9Count} / ${totalC}</h3></div>
                     </div>
                 </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-lg mb-4 text-slate-800">Recent Transactions</h3>

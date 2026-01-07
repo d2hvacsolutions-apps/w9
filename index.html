@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>D2 HVAC Solutions - Contractor Manager</title>
     
     <!-- Tailwind CSS -->
@@ -91,6 +91,7 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <i data-lucide="mail" class="w-5 h-5"></i>
                     </div>
+                    <!-- Added autocapitalize="none" to prevent mobile keyboard from capitalizing first letter -->
                     <input type="email" id="email" autocapitalize="none" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Email" required>
                 </div>
                 <div class="relative">
@@ -98,9 +99,13 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <i data-lucide="lock" class="w-5 h-5"></i>
                     </div>
+                    <!-- Added padding-right (pr-12) to make room for eye icon -->
                     <input type="password" id="password" autocapitalize="none" class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Password" required>
-                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors">
-                        <i id="eye-icon" data-lucide="eye" class="w-5 h-5"></i>
+                    
+                    <!-- EYE ICON BUTTON -->
+                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors z-10 cursor-pointer" style="min-width: 40px; justify-content: center;">
+                        <i id="icon-show" data-lucide="eye" class="w-5 h-5"></i>
+                        <i id="icon-hide" data-lucide="eye-off" class="w-5 h-5 hidden"></i>
                     </button>
                 </div>
                 <div id="login-error" class="text-red-500 text-sm text-center hidden bg-red-50 p-2 rounded">Invalid credentials.</div>
@@ -292,16 +297,18 @@
         // --- LOGIN UTILS ---
         function toggleLoginPassword() {
             const pwdInput = document.getElementById('password');
-            const icon = document.getElementById('eye-icon');
+            const showIcon = document.getElementById('icon-show');
+            const hideIcon = document.getElementById('icon-hide');
+            
             if (pwdInput.type === "password") {
                 pwdInput.type = "text";
-                // Optionally change icon to eye-off if supported by lucide, or just keep eye
-                icon.setAttribute('class', 'text-blue-600 w-5 h-5'); // Highlight to show it's active
+                showIcon.classList.add('hidden');
+                hideIcon.classList.remove('hidden');
             } else {
                 pwdInput.type = "password";
-                icon.setAttribute('class', 'text-slate-400 w-5 h-5');
+                showIcon.classList.remove('hidden');
+                hideIcon.classList.add('hidden');
             }
-            lucide.createIcons();
         }
 
         async function handleLogin(e) {
@@ -334,7 +341,6 @@
                 const usersCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
                 
                 // Fetch all users to do safe case-insensitive check client side 
-                // (Firestore doesn't do case-insensitive lookups easily without extra fields)
                 const snapshot = await usersCollection.get();
                 
                 let foundUser = null;

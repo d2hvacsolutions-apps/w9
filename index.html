@@ -86,10 +86,25 @@
                 <p class="text-slate-500 text-sm">Secure Login</p>
             </div>
             <form id="login-form" class="space-y-4">
-                <input type="email" id="email" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Email" required>
-                <input type="password" id="password" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Password" required>
-                <div id="login-error" class="text-red-500 text-sm text-center hidden">Invalid credentials.</div>
-                <button type="submit" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg">Sign In</button>
+                <div class="relative">
+                    <label class="sr-only">Email</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </div>
+                    <input type="email" id="email" autocapitalize="none" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Email" required>
+                </div>
+                <div class="relative">
+                    <label class="sr-only">Password</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                    </div>
+                    <input type="password" id="password" autocapitalize="none" class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Password" required>
+                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors">
+                        <i id="eye-icon" data-lucide="eye" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm text-center hidden bg-red-50 p-2 rounded">Invalid credentials.</div>
+                <button type="submit" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg active:scale-95">Sign In</button>
             </form>
             <div class="mt-6 text-center text-xs text-slate-400">© 2026 D2 HVAC Solutions</div>
         </div>
@@ -252,7 +267,7 @@
         let contractors = [];
         let payments = [];
         let appUsers = [];
-        let currentUser = null; // { email, role, id, linkedContractorId, name }
+        let currentUser = null; 
         let isPublicMode = false;
 
         // --- INIT ---
@@ -262,6 +277,8 @@
             initPublicMode();
         } else {
             document.getElementById('login-form').addEventListener('submit', handleLogin);
+            // Ensure icons render on login screen
+            lucide.createIcons();
         }
 
         async function initPublicMode() {
@@ -272,15 +289,32 @@
             else await auth.signInAnonymously();
         }
 
+        // --- LOGIN UTILS ---
+        function toggleLoginPassword() {
+            const pwdInput = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            if (pwdInput.type === "password") {
+                pwdInput.type = "text";
+                // Optionally change icon to eye-off if supported by lucide, or just keep eye
+                icon.setAttribute('class', 'text-blue-600 w-5 h-5'); // Highlight to show it's active
+            } else {
+                pwdInput.type = "password";
+                icon.setAttribute('class', 'text-slate-400 w-5 h-5');
+            }
+            lucide.createIcons();
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('email').value.trim();
+            const emailInput = document.getElementById('email').value.trim();
+            const email = emailInput.toLowerCase(); // FIX for mobile capitalization
             const pass = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('login-error');
             const btn = document.getElementById('btn-login');
 
             btn.textContent = "Verifying...";
             btn.disabled = true;
+            errorDiv.classList.add('hidden');
 
             try {
                 if (!auth.currentUser) {
@@ -288,9 +322,9 @@
                      else await auth.signInAnonymously();
                 }
 
-                // 1. Check Master Credentials
-                if (email === MASTER_CREDENTIALS.user && pass === MASTER_CREDENTIALS.pass) {
-                    currentUser = { email: email, role: 'admin', id: 'master', name: MASTER_CREDENTIALS.name };
+                // 1. Check Master Credentials (Case insensitive email check)
+                if (email === MASTER_CREDENTIALS.user.toLowerCase() && pass === MASTER_CREDENTIALS.pass) {
+                    currentUser = { email: MASTER_CREDENTIALS.user, role: 'admin', id: 'master', name: MASTER_CREDENTIALS.name };
                     grantAccess();
                     return;
                 }
@@ -299,12 +333,14 @@
                 const isAIPreview = typeof __app_id !== 'undefined';
                 const usersCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
                 
-                const snapshot = await usersCollection.where('email', '==', email).get();
+                // Fetch all users to do safe case-insensitive check client side 
+                // (Firestore doesn't do case-insensitive lookups easily without extra fields)
+                const snapshot = await usersCollection.get();
                 
                 let foundUser = null;
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    if (data.password === btoa(pass)) { 
+                    if (data.email.toLowerCase() === email && data.password === btoa(pass)) { 
                         foundUser = { id: doc.id, ...data };
                     }
                 });
@@ -314,7 +350,6 @@
                     // Ensure name exists
                     if(!currentUser.name) {
                         if(currentUser.role === 'contractor' && currentUser.linkedContractorId) {
-                            // Will fetch name later or use generic for now
                             currentUser.name = "Contractor";
                         } else {
                             currentUser.name = "Authorized User";

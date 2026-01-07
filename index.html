@@ -25,7 +25,7 @@
 
         @media print {
             body { background: white; }
-            #sidebar, #login-screen, .no-print, #edit-c-modal, #user-modal, #public-onboard-view { display: none !important; }
+            #sidebar, #login-screen, .no-print, #edit-c-modal, #user-modal, #public-onboard-view, #mobile-overlay, #mobile-menu-btn { display: none !important; }
             #main-content { margin: 0; padding: 0; width: 100%; height: auto; overflow: visible; }
             .card { box-shadow: none; border: none; }
             table { width: 100%; border-collapse: collapse; }
@@ -35,19 +35,22 @@
         .print-header { display: none; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans h-screen flex overflow-hidden">
+<body class="bg-slate-100 text-slate-900 font-sans h-screen flex overflow-hidden relative">
+
+    <!-- MOBILE OVERLAY BACKDROP -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
     <!-- PUBLIC ONBOARDING VIEW -->
     <div id="public-onboard-view" class="fixed inset-0 z-[60] bg-slate-100 overflow-y-auto hidden">
         <div class="min-h-screen flex flex-col items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 border border-slate-200">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 sm:p-8 border border-slate-200">
                 <div class="flex flex-col items-center mb-8 border-b border-slate-100 pb-6">
-                    <img src="logo-D2-HVAC-Solutions-preto.png" alt="D2 HVAC Logo" class="w-40 mb-4 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <img src="logo-D2-HVAC-Solutions-preto.png" alt="D2 HVAC Logo" class="w-32 sm:w-40 mb-4 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                     <div class="w-16 h-16 bg-blue-600 rounded-xl hidden items-center justify-center text-white mx-auto">
                         <i data-lucide="building-2" class="w-10 h-10"></i>
                     </div>
-                    <h1 class="text-2xl font-bold text-slate-800 mt-4">Contractor Registration</h1>
-                    <p class="text-slate-500 text-center mt-2">Please fill out your business details and attach your W-9 form.</p>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800 mt-4 text-center">Contractor Registration</h1>
+                    <p class="text-slate-500 text-center mt-2 text-sm">Please fill out your business details and attach your W-9 form.</p>
                 </div>
                 <form id="public-form" onsubmit="handlePublicSubmit(event)" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -91,7 +94,6 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <i data-lucide="mail" class="w-5 h-5"></i>
                     </div>
-                    <!-- Added autocapitalize="none" to prevent mobile keyboard from capitalizing first letter -->
                     <input type="email" id="email" autocapitalize="none" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Email" required>
                 </div>
                 <div class="relative">
@@ -99,10 +101,7 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <i data-lucide="lock" class="w-5 h-5"></i>
                     </div>
-                    <!-- Added padding-right (pr-12) to make room for eye icon -->
                     <input type="password" id="password" autocapitalize="none" class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Password" required>
-                    
-                    <!-- EYE ICON BUTTON -->
                     <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors z-10 cursor-pointer" style="min-width: 40px; justify-content: center;">
                         <i id="icon-show" data-lucide="eye" class="w-5 h-5"></i>
                         <i id="icon-hide" data-lucide="eye-off" class="w-5 h-5 hidden"></i>
@@ -117,7 +116,7 @@
 
     <!-- ADD/EDIT USER MODAL -->
     <div id="user-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <h3 id="um-title" class="font-bold text-xl text-slate-800 mb-4">Manage User</h3>
             <form onsubmit="handleSaveUser(event)" class="space-y-4">
                 <input type="hidden" id="um-id">
@@ -145,7 +144,6 @@
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Link to Contractor Profile</label>
                     <select id="um-contractor-link" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="">Select Contractor...</option>
-                        <!-- Populated via JS -->
                     </select>
                 </div>
                 <div class="flex justify-end gap-2 mt-4">
@@ -197,8 +195,8 @@
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col hidden h-full">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transform transition-transform duration-300 -translate-x-full md:translate-x-0 md:static md:h-screen hidden">
         <div class="p-6 border-b border-slate-800 flex items-center gap-3">
              <div class="w-10 h-10 bg-white rounded-lg p-1 flex items-center justify-center">
                 <img src="logo-D2-HVAC-Solutions-preto.png" alt="Logo" class="max-w-full max-h-full" onerror="this.style.display='none'; this.parentElement.innerHTML='<i data-lucide=\'building-2\' class=\'text-blue-600\'></i>'">
@@ -209,18 +207,16 @@
             </div>
         </div>
 
-        <nav id="nav-container" class="flex-1 p-4 space-y-2">
-            <!-- Nav Items Injected via JS based on Role -->
+        <nav id="nav-container" class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <!-- Nav Items Injected via JS -->
         </nav>
 
         <div class="p-4 border-t border-slate-800">
             <div class="flex items-center gap-3 mb-4">
-                <!-- User Initials Circle -->
                 <div id="user-initials-display" class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs uppercase">
                     <i data-lucide="user"></i>
                 </div>
                 <div>
-                    <!-- User Name Display -->
                     <p id="user-name-display" class="text-xs font-bold text-white truncate w-32">User</p>
                     <p class="text-[10px] text-slate-500">Logged In</p>
                 </div>
@@ -232,25 +228,29 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main id="main-content" class="flex-1 flex flex-col h-full overflow-y-auto hidden">
-        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-10 no-print">
-            <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard</h2>
-            <div class="text-sm text-slate-500" id="current-date"></div>
+    <main id="main-content" class="flex-1 flex flex-col h-full overflow-y-auto hidden bg-slate-100">
+        <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 flex justify-between items-center sticky top-0 z-20 no-print shadow-sm">
+            <div class="flex items-center gap-3">
+                <!-- MOBILE MENU BUTTON -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-500 hover:text-slate-800 p-1">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h2 id="page-title" class="text-lg md:text-xl font-bold text-slate-800 truncate">Dashboard</h2>
+            </div>
+            <div class="text-xs md:text-sm text-slate-500" id="current-date"></div>
         </header>
-        <div id="content-area" class="p-8 max-w-7xl mx-auto w-full"></div>
+        <div id="content-area" class="p-4 md:p-8 max-w-7xl mx-auto w-full"></div>
     </main>
 
-    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-50 flex items-center gap-3">
+    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-[70] flex items-center gap-3">
         <i data-lucide="check-circle" class="text-green-400 w-5 h-5"></i>
         <span id="toast-msg">Success</span>
     </div>
 
     <!-- SCRIPTS -->
     <script>
-        // --- CONFIGURATION ---
         const MASTER_CREDENTIALS = { user: "dante.frota@d2hvacsolutions.com", pass: "!D2hvac!2025", name: "Dante Frota" };
         
-        // --- FIREBASE INIT ---
         const firebaseConfig = {
             apiKey: "AIzaSyDeX6K21E7LaQ1FPlI6rKuPVJEzscGDzxo",
             authDomain: "d2-hvac-w9.firebaseapp.com",
@@ -268,21 +268,18 @@
         let storage = null;
         try { if(activeConfig.storageBucket) storage = firebase.storage(); } catch(e) { console.warn(e); }
 
-        // --- STATE ---
         let contractors = [];
         let payments = [];
         let appUsers = [];
         let currentUser = null; 
         let isPublicMode = false;
 
-        // --- INIT ---
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('mode') === 'onboard') {
             isPublicMode = true;
             initPublicMode();
         } else {
             document.getElementById('login-form').addEventListener('submit', handleLogin);
-            // Ensure icons render on login screen
             lucide.createIcons();
         }
 
@@ -294,12 +291,10 @@
             else await auth.signInAnonymously();
         }
 
-        // --- LOGIN UTILS ---
         function toggleLoginPassword() {
             const pwdInput = document.getElementById('password');
             const showIcon = document.getElementById('icon-show');
             const hideIcon = document.getElementById('icon-hide');
-            
             if (pwdInput.type === "password") {
                 pwdInput.type = "text";
                 showIcon.classList.add('hidden');
@@ -311,10 +306,22 @@
             }
         }
 
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
             const emailInput = document.getElementById('email').value.trim();
-            const email = emailInput.toLowerCase(); // FIX for mobile capitalization
+            const email = emailInput.toLowerCase(); 
             const pass = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('login-error');
             const btn = document.getElementById('btn-login');
@@ -329,20 +336,16 @@
                      else await auth.signInAnonymously();
                 }
 
-                // 1. Check Master Credentials (Case insensitive email check)
                 if (email === MASTER_CREDENTIALS.user.toLowerCase() && pass === MASTER_CREDENTIALS.pass) {
                     currentUser = { email: MASTER_CREDENTIALS.user, role: 'admin', id: 'master', name: MASTER_CREDENTIALS.name };
                     grantAccess();
                     return;
                 }
 
-                // 2. Check DB Users
                 const isAIPreview = typeof __app_id !== 'undefined';
                 const usersCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
                 
-                // Fetch all users to do safe case-insensitive check client side 
                 const snapshot = await usersCollection.get();
-                
                 let foundUser = null;
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -353,13 +356,8 @@
 
                 if (foundUser) {
                     currentUser = foundUser;
-                    // Ensure name exists
                     if(!currentUser.name) {
-                        if(currentUser.role === 'contractor' && currentUser.linkedContractorId) {
-                            currentUser.name = "Contractor";
-                        } else {
-                            currentUser.name = "Authorized User";
-                        }
+                        currentUser.name = (currentUser.role === 'contractor' && currentUser.linkedContractorId) ? "Contractor" : "Authorized User";
                     }
                     grantAccess();
                 } else {
@@ -377,14 +375,13 @@
 
         function grantAccess() {
             document.getElementById('login-screen').classList.add('hidden');
+            // Remove 'hidden' class from sidebar and main-content completely to allow responsive display
             document.getElementById('sidebar').classList.remove('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             
-            // Set User Info in Sidebar
             document.getElementById('user-name-display').textContent = currentUser.name || currentUser.email;
             document.getElementById('user-role-display').textContent = (currentUser.role || 'employee').toUpperCase();
             
-            // Set Initials
             const name = currentUser.name || "User";
             const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             document.getElementById('user-initials-display').textContent = initials;
@@ -400,10 +397,8 @@
             const isAIPreview = typeof __app_id !== 'undefined';
             const root = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data') : db;
             
-            // Listeners
             root.collection('contractors').onSnapshot(s => {
                 contractors = s.docs.map(d => ({id: d.id, ...d.data()}));
-                // If contractor logged in, update name from linked profile if available
                 if (currentUser.role === 'contractor' && currentUser.linkedContractorId) {
                     const linked = contractors.find(c => c.id === currentUser.linkedContractorId);
                     if (linked && linked.contactName) {
@@ -434,20 +429,21 @@
         function buildNavigation() {
             const nav = document.getElementById('nav-container');
             nav.innerHTML = '';
-            
             const role = currentUser.role || 'employee';
 
+            const createBtn = (id, icon, label) => `<button onclick="router('${id}'); if(window.innerWidth < 768) toggleMobileMenu();" id="nav-${id}" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="${icon}" class="w-5 h-5"></i> ${label}</button>`;
+
             if (role !== 'contractor') {
-                nav.innerHTML += `<button onclick="router('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</button>`;
-                nav.innerHTML += `<button onclick="router('contractors')" id="nav-contractors" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="users" class="w-5 h-5"></i> Contractors</button>`;
-                nav.innerHTML += `<button onclick="router('payments')" id="nav-payments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="dollar-sign" class="w-5 h-5"></i> Payments</button>`;
-                nav.innerHTML += `<button onclick="router('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="file-bar-chart" class="w-5 h-5"></i> 1099 Reports</button>`;
+                nav.innerHTML += createBtn('dashboard', 'layout-dashboard', 'Dashboard');
+                nav.innerHTML += createBtn('contractors', 'users', 'Contractors');
+                nav.innerHTML += createBtn('payments', 'dollar-sign', 'Payments');
+                nav.innerHTML += createBtn('reports', 'file-bar-chart', '1099 Reports');
             } else {
-                nav.innerHTML += `<button onclick="router('my-profile')" id="nav-my-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="user" class="w-5 h-5"></i> My Profile</button>`;
+                nav.innerHTML += createBtn('my-profile', 'user', 'My Profile');
             }
 
             if (role === 'admin') {
-                nav.innerHTML += `<button onclick="router('users')" id="nav-users" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="user-plus" class="w-5 h-5"></i> Users & Access</button>`;
+                nav.innerHTML += createBtn('users', 'user-plus', 'Users & Access');
             }
             lucide.createIcons();
         }
@@ -464,10 +460,7 @@
                 activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300');
             }
 
-            const titles = { 
-                dashboard: 'Overview', contractors: 'Contractor Management', payments: 'Payment Ledger', 
-                reports: 'Tax Reports (1099)', users: 'User Access Control', 'my-profile': 'My Contractor Portal'
-            };
+            const titles = { dashboard: 'Overview', contractors: 'Contractor Management', payments: 'Payment Ledger', reports: 'Tax Reports (1099)', users: 'User Access Control', 'my-profile': 'My Contractor Portal' };
             document.getElementById('page-title').textContent = titles[view] || view;
             refreshCurrentView();
         }
@@ -476,119 +469,39 @@
             const container = document.getElementById('content-area');
             container.innerHTML = '';
             const view = window.currentView;
-
             if(view === 'dashboard') renderDashboard();
             else if(view === 'contractors') renderContractors();
             else if(view === 'payments') renderPayments();
             else if(view === 'reports') renderReports();
             else if(view === 'users') renderUsers();
             else if(view === 'my-profile') renderContractorPortal();
-            
             lucide.createIcons();
         }
 
-        // --- USER MANAGEMENT ---
-        function openUserModal(user = null) {
-            document.getElementById('user-modal').classList.remove('hidden');
-            const roleSelect = document.getElementById('um-role');
-            const contractorDiv = document.getElementById('um-contractor-div');
-            const cSelect = document.getElementById('um-contractor-link');
-            cSelect.innerHTML = '<option value="">Select Contractor...</option>' + contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('');
-
-            if(user) {
-                document.getElementById('um-title').textContent = "Edit User & Password";
-                document.getElementById('um-id').value = user.id;
-                document.getElementById('um-name').value = user.name || '';
-                document.getElementById('um-email').value = user.email;
-                document.getElementById('um-pass').value = atob(user.password);
-                roleSelect.value = user.role || 'employee';
-                cSelect.value = user.linkedContractorId || '';
-            } else {
-                document.getElementById('um-title').textContent = "Add New User";
-                document.getElementById('um-id').value = '';
-                document.getElementById('um-name').value = '';
-                document.getElementById('um-email').value = '';
-                document.getElementById('um-pass').value = '';
-                roleSelect.value = 'employee';
-                cSelect.value = '';
-            }
-            toggleContractorSelect();
-        }
-
-        function closeUserModal() { document.getElementById('user-modal').classList.add('hidden'); }
-
-        function toggleContractorSelect() {
-            const role = document.getElementById('um-role').value;
-            const div = document.getElementById('um-contractor-div');
-            if (role === 'contractor') div.classList.remove('hidden');
-            else div.classList.add('hidden');
-        }
-
-        async function handleSaveUser(e) {
-            e.preventDefault();
-            const id = document.getElementById('um-id').value;
-            const name = document.getElementById('um-name').value;
-            const email = document.getElementById('um-email').value;
-            const pass = document.getElementById('um-pass').value;
-            const role = document.getElementById('um-role').value;
-            const linkedId = document.getElementById('um-contractor-link').value;
-
-            if (role === 'contractor' && !linkedId) return alert("Please select a Contractor profile to link to this user.");
-
-            const isAIPreview = typeof __app_id !== 'undefined';
-            const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
-
-            const data = {
-                name: name,
-                email: email,
-                password: btoa(pass),
-                role: role,
-                linkedContractorId: linkedId || null,
-                updatedAt: new Date().toISOString()
-            };
-
-            try {
-                if(id) await uCollection.doc(id).update(data);
-                else await uCollection.add({...data, createdAt: new Date().toISOString()});
-                closeUserModal();
-                showToast(id ? "User Updated" : "User Created");
-            } catch(err) { alert(err.message); }
-        }
-
+        // --- RENDER FUNCTIONS WITH RESPONSIVE TABLES ---
         function renderUsers() {
             const container = document.getElementById('content-area');
             container.innerHTML = `
                 <div class="flex justify-between items-center mb-6">
-                    <p class="text-slate-500">Manage access levels and reset passwords.</p>
-                    <button onclick="openUserModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 shadow-sm"><i data-lucide="plus"></i> New User</button>
+                    <p class="text-slate-500 text-sm md:text-base">Manage access levels and reset passwords.</p>
+                    <button onclick="openUserModal()" class="bg-blue-600 text-white px-3 py-2 text-sm md:text-base md:px-4 md:py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 shadow-sm"><i data-lucide="plus"></i> New User</button>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500 border-b">
-                            <tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email</th><th class="px-6 py-3">Role</th><th class="px-6 py-3 text-right">Actions</th></tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            ${appUsers.map(u => {
-                                const roleColors = { admin: 'bg-purple-100 text-purple-700', employee: 'bg-blue-100 text-blue-700', contractor: 'bg-green-100 text-green-700' };
-                                const roleLabel = u.role ? u.role.toUpperCase() : 'EMPLOYEE';
-                                return `
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="px-6 py-3 font-bold text-slate-700">${u.name || 'User'}</td>
-                                        <td class="px-6 py-3 text-slate-500">${u.email}</td>
-                                        <td class="px-6 py-3"><span class="${roleColors[u.role] || 'bg-gray-100'} px-2 py-1 rounded text-xs font-bold">${roleLabel}</span></td>
-                                        <td class="px-6 py-3 text-right flex justify-end gap-2">
-                                            <button onclick='openUserModal(${JSON.stringify(u).replace(/'/g, "&apos;")})' class="text-blue-500 hover:bg-blue-50 p-2 rounded"><i data-lucide="key" class="w-4 h-4"></i> Edit</button>
-                                            <button onclick="deleteUser('${u.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                        </td>
-                                    </tr>`;
-                            }).join('')}
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email</th><th class="px-6 py-3">Role</th><th class="px-6 py-3 text-right">Actions</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                ${appUsers.map(u => {
+                                    const roleColors = { admin: 'bg-purple-100 text-purple-700', employee: 'bg-blue-100 text-blue-700', contractor: 'bg-green-100 text-green-700' };
+                                    return `<tr class="hover:bg-slate-50"><td class="px-6 py-3 font-bold text-slate-700">${u.name || 'User'}</td><td class="px-6 py-3 text-slate-500">${u.email}</td><td class="px-6 py-3"><span class="${roleColors[u.role] || 'bg-gray-100'} px-2 py-1 rounded text-xs font-bold">${u.role ? u.role.toUpperCase() : 'EMPLOYEE'}</span></td><td class="px-6 py-3 text-right flex justify-end gap-2"><button onclick='openUserModal(${JSON.stringify(u).replace(/'/g, "&apos;")})' class="text-blue-500 hover:bg-blue-50 p-2 rounded"><i data-lucide="key" class="w-4 h-4"></i></button><button onclick="deleteUser('${u.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>`;
             lucide.createIcons();
         }
 
-        // --- CONTRACTOR PORTAL ---
         function renderContractorPortal() {
             const container = document.getElementById('content-area');
             const cId = currentUser.linkedContractorId;
@@ -600,38 +513,19 @@
             const totalPaid = myPayments.reduce((acc, p) => acc + parseFloat(p.amount), 0);
 
             container.innerHTML = `
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-slate-800">Welcome, ${currentUser.name || myProfile.contactName}</h2>
-                    <p class="text-slate-500">Your contractor portal</p>
-                </div>
+                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-800">Welcome, ${currentUser.name || myProfile.contactName}</h2><p class="text-slate-500">Your contractor portal</p></div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm text-slate-500 font-bold uppercase">Total Earnings</p>
-                        <h3 class="text-3xl font-bold text-green-600">$${totalPaid.toLocaleString()}</h3>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm text-slate-500 font-bold uppercase">Business Info</p>
-                        <h3 class="font-bold text-slate-800">${myProfile.businessName}</h3>
-                        <p class="text-xs text-slate-500">${myProfile.ein}</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm text-slate-500 font-bold uppercase">W-9 Status</p>
-                        ${myProfile.w9OnFile ? `<div class="flex items-center gap-2 text-green-600 font-bold mt-1"><i data-lucide="check-circle"></i> On File</div>` : `<div class="flex items-center gap-2 text-red-500 font-bold mt-1"><i data-lucide="alert-circle"></i> Missing</div>`}
-                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"><p class="text-sm text-slate-500 font-bold uppercase">Total Earnings</p><h3 class="text-3xl font-bold text-green-600">$${totalPaid.toLocaleString()}</h3></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"><p class="text-sm text-slate-500 font-bold uppercase">Business Info</p><h3 class="font-bold text-slate-800">${myProfile.businessName}</h3><p class="text-xs text-slate-500">${myProfile.ein}</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"><p class="text-sm text-slate-500 font-bold uppercase">W-9 Status</p>${myProfile.w9OnFile ? `<div class="flex items-center gap-2 text-green-600 font-bold mt-1"><i data-lucide="check-circle"></i> On File</div>` : `<div class="flex items-center gap-2 text-red-500 font-bold mt-1"><i data-lucide="alert-circle"></i> Missing</div>`}</div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-                    <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700">My Payment History</h3>
-                        <button onclick="window.print()" class="text-sm text-blue-600 hover:underline flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Print Statement</button>
-                    </div>
-                    <table class="w-full text-left text-sm"><thead class="bg-white text-slate-500 border-b"><tr><th class="px-6 py-3">Date</th><th class="px-6 py-3">Method</th><th class="px-6 py-3">Memo</th><th class="px-6 py-3 text-right">Amount</th></tr></thead>
-                        <tbody class="divide-y divide-slate-100">${myPayments.map(p => `<tr><td class="px-6 py-3 font-mono text-slate-600">${p.date}</td><td class="px-6 py-3"><span class="bg-slate-100 px-2 py-1 rounded text-xs">${p.method}</span></td><td class="px-6 py-3 text-slate-500">${p.description || '-'}</td><td class="px-6 py-3 text-right font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString()}</td></tr>`).join('')}</tbody>
-                    </table>
+                    <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center"><h3 class="font-bold text-slate-700">My Payment History</h3><button onclick="window.print()" class="text-sm text-blue-600 hover:underline flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Print</button></div>
+                    <div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-white text-slate-500 border-b"><tr><th class="px-6 py-3">Date</th><th class="px-6 py-3">Method</th><th class="px-6 py-3">Memo</th><th class="px-6 py-3 text-right">Amount</th></tr></thead><tbody class="divide-y divide-slate-100">${myPayments.map(p => `<tr><td class="px-6 py-3 font-mono text-slate-600">${p.date}</td><td class="px-6 py-3"><span class="bg-slate-100 px-2 py-1 rounded text-xs">${p.method}</span></td><td class="px-6 py-3 text-slate-500">${p.description || '-'}</td><td class="px-6 py-3 text-right font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
                 </div>`;
             lucide.createIcons();
         }
 
-        // --- DASHBOARD RENDER ---
         function renderDashboard() {
              const container = document.getElementById('content-area');
             const totalC = contractors.length;
@@ -641,17 +535,17 @@
             const recentP = [...payments].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0,5);
 
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div onclick="router('contractors')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all flex items-center gap-4 group">
-                        <div class="p-4 bg-blue-100 text-blue-600 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="users"></i></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                    <div onclick="router('contractors')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all flex items-center gap-4 group">
+                        <div class="p-4 bg-blue-100 text-blue-600 rounded-full"><i data-lucide="users"></i></div>
                         <div><p class="text-sm text-slate-500 font-bold uppercase">Contractors</p><h3 class="text-3xl font-bold text-slate-800">${totalC}</h3></div>
                     </div>
-                    <div onclick="router('payments')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-green-300 transition-all flex items-center gap-4 group">
-                        <div class="p-4 bg-green-100 text-green-600 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="dollar-sign"></i></div>
-                        <div><p class="text-sm text-slate-500 font-bold uppercase">YTD Payout (${year})</p><h3 class="text-3xl font-bold text-slate-800">$${ytd.toLocaleString()}</h3></div>
+                    <div onclick="router('payments')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all flex items-center gap-4 group">
+                        <div class="p-4 bg-green-100 text-green-600 rounded-full"><i data-lucide="dollar-sign"></i></div>
+                        <div><p class="text-sm text-slate-500 font-bold uppercase">YTD Payout</p><h3 class="text-3xl font-bold text-slate-800">$${ytd.toLocaleString()}</h3></div>
                     </div>
-                    <div onclick="router('reports')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-purple-300 transition-all flex items-center gap-4 group">
-                        <div class="p-4 bg-purple-100 text-purple-600 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="file-check"></i></div>
+                    <div onclick="router('reports')" class="cursor-pointer bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all flex items-center gap-4 group">
+                        <div class="p-4 bg-purple-100 text-purple-600 rounded-full"><i data-lucide="file-check"></i></div>
                         <div><p class="text-sm text-slate-500 font-bold uppercase">W9s on File</p><h3 class="text-3xl font-bold text-slate-800">${w9Count} / ${totalC}</h3></div>
                     </div>
                 </div>
@@ -659,20 +553,255 @@
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-lg mb-4 text-slate-800">Recent Transactions</h3>
                         <div class="space-y-3">
-                            ${recentP.length ? recentP.map(p => { const c = contractors.find(cx => cx.id === p.contractorId) || {businessName: 'Unknown'}; return `<div class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-all"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-200">${c.businessName.substring(0,2).toUpperCase()}</div><div><p class="font-bold text-slate-800 text-sm">${c.businessName}</p><p class="text-xs text-slate-500">${p.date}</p></div></div><span class="font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString()}</span></div>`; }).join('') : '<p class="text-slate-400 text-center py-4">No payments yet.</p>'}
+                            ${recentP.length ? recentP.map(p => { const c = contractors.find(cx => cx.id === p.contractorId) || {businessName: 'Unknown'}; return `<div class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-all"><div class="flex items-center gap-3"><div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-200">${c.businessName.substring(0,2).toUpperCase()}</div><div><p class="font-bold text-slate-800 text-xs md:text-sm">${c.businessName}</p><p class="text-[10px] md:text-xs text-slate-500">${p.date}</p></div></div><span class="font-bold text-slate-700 text-sm md:text-base">$${parseFloat(p.amount).toLocaleString()}</span></div>`; }).join('') : '<p class="text-slate-400 text-center py-4">No payments yet.</p>'}
                         </div>
                     </div>
                     <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 text-white flex flex-col justify-center items-center text-center shadow-xl">
                         <img src="logo-D2-HVAC-Solutions-preto.png" class="w-24 mb-4 bg-white p-2 rounded-lg opacity-90" onerror="this.style.display='none'">
-                        <h2 class="text-2xl font-bold mb-2">Welcome Back, ${currentUser.name.split(' ')[0]}</h2>
-                        <p class="text-slate-400 mb-6 max-w-xs text-sm">System is secure and up to date.</p>
-                        <div class="flex gap-2 text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v3.5</span></div>
+                        <h2 class="text-xl md:text-2xl font-bold mb-2">Welcome Back, ${currentUser.name.split(' ')[0]}</h2>
+                        <p class="text-slate-400 mb-6 max-w-xs text-xs md:text-sm">System is secure and up to date.</p>
+                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v3.6 Mobile Optimized</span></div>
                     </div>
                 </div>`;
             lucide.createIcons();
         }
 
-        // ... Existing file upload, copy link, and other helpers remain same ...
+        function renderContractors() {
+             const container = document.getElementById('content-area');
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between mb-6 no-print gap-4">
+                    <div class="relative w-full max-w-sm">
+                        <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="c-search" onkeyup="filterContractors()" placeholder="Search contractors..." class="pl-10 pr-4 py-2 w-full rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base">
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <button onclick="copyLink()" class="flex-1 sm:flex-none bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-colors text-xs md:text-sm"><i data-lucide="share-2" class="w-4 h-4"></i> Link</button>
+                        <button onclick="showAddContractorModal()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-colors text-xs md:text-sm"><i data-lucide="plus"></i> Add</button>
+                    </div>
+                </div>
+                <div id="add-c-form" class="hidden bg-blue-50 border border-blue-200 p-4 md:p-6 rounded-xl mb-6">
+                    <h3 class="font-bold text-blue-900 mb-4">New Contractor Registration</h3>
+                    <form onsubmit="handleSaveContractor(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="nc-name" placeholder="Business Name *" required class="p-2 rounded border border-slate-300 w-full">
+                        <input type="text" id="nc-contact" placeholder="Contact Person" class="p-2 rounded border border-slate-300 w-full">
+                        <input type="text" id="nc-ein" placeholder="EIN / SSN *" required class="p-2 rounded border border-slate-300 w-full">
+                        <input type="email" id="nc-email" placeholder="Email" class="p-2 rounded border border-slate-300 w-full">
+                        <input type="text" id="nc-phone" placeholder="Phone" class="p-2 rounded border border-slate-300 w-full">
+                        <input type="text" id="nc-address" placeholder="Full Address *" required class="p-2 rounded border border-slate-300 w-full">
+                        <div class="md:col-span-2 bg-white p-3 rounded border border-dashed border-slate-400"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload W9</label><input type="file" id="nc-file" accept="image/*,.pdf" class="block w-full text-sm text-slate-500"></div>
+                        <div class="md:col-span-2 flex justify-end gap-2 mt-2"><button type="button" onclick="document.getElementById('add-c-form').classList.add('hidden')" class="px-4 py-2 text-slate-600 hover:bg-white rounded">Cancel</button><button type="submit" id="btn-save-c" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div>
+                    </form>
+                </div>
+                <div id="c-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
+            filterContractors(); 
+            lucide.createIcons();
+        }
+
+        function filterContractors() {
+            const query = document.getElementById('c-search')?.value.toLowerCase() || '';
+            const list = document.getElementById('c-list');
+            if(!list) return;
+            const filtered = contractors.filter(c => c.businessName.toLowerCase().includes(query) || c.ein.includes(query));
+            list.innerHTML = filtered.map(c => `
+                <div onclick="openEditModal('${c.id}')" class="cursor-pointer bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all flex flex-col justify-between group relative">
+                    <div class="absolute top-4 right-4 text-slate-300 group-hover:text-blue-500 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></div>
+                    <div><div class="flex items-center gap-2 mb-2 pr-6"><h3 class="font-bold text-lg text-slate-800">${c.businessName}</h3>${c.w9OnFile ? '<i data-lucide="file-check" class="w-4 h-4 text-green-500"></i>' : ''}</div><div class="space-y-1 text-sm text-slate-500"><p><span class="font-mono bg-slate-100 px-1 rounded text-xs text-slate-600">${c.ein}</span></p><p>${c.contactName}</p></div></div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400"><span class="truncate max-w-[150px]">${c.address}</span><span class="text-blue-600 font-semibold group-hover:underline">View</span></div>
+                </div>`).join('');
+            if(filtered.length === 0) list.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 bg-slate-50 rounded border border-dashed border-slate-300">No contractors found.</div>`;
+            lucide.createIcons();
+        }
+
+        function renderPayments() {
+             const container = document.getElementById('content-area');
+            const sorted = [...payments].sort((a,b) => new Date(b.date) - new Date(a.date));
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 sticky top-6">
+                            <h2 class="font-bold text-lg mb-4 text-slate-800">Log Payment</h2>
+                            <form onsubmit="handleSavePayment(event)" class="space-y-4">
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Contractor</label><select id="np-contractor" required class="w-full p-2 bg-white border border-slate-300 rounded"><option value="">Select...</option>${contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('')}</select></div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Amount ($)</label><input type="number" step="0.01" id="np-amount" required class="w-full p-2 border border-slate-300 rounded"></div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Date</label><input type="date" id="np-date" required class="w-full p-2 border border-slate-300 rounded" value="${new Date().toISOString().split('T')[0]}"></div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Method</label><select id="np-method" class="w-full p-2 bg-white border border-slate-300 rounded"><option>Check</option><option>ACH</option><option>Zelle</option><option>Cash</option><option>Credit Card</option></select></div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Memo</label><input type="text" id="np-memo" placeholder="Invoice #..." class="w-full p-2 border border-slate-300 rounded"></div>
+                                <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700 shadow-sm">Record Payment</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-4 py-3">Date</th><th class="px-4 py-3">Payee</th><th class="px-4 py-3">Details</th><th class="px-4 py-3 text-right">Amount</th></tr></thead><tbody class="divide-y divide-slate-100">${sorted.map(p => { const c = contractors.find(cx => cx.id === p.contractorId) || {businessName: 'Unknown'}; return `<tr class="hover:bg-slate-50"><td class="px-4 py-3 font-mono text-slate-600">${p.date}</td><td class="px-4 py-3 font-bold text-slate-800">${c.businessName}</td><td class="px-4 py-3 text-slate-500"><span class="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">${p.method}</span>${p.description ? `<span class="ml-2 text-xs opacity-75">${p.description}</span>` : ''}</td><td class="px-4 py-3 text-right font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td></tr>`; }).join('')}${sorted.length === 0 ? '<tr><td colspan="4" class="p-8 text-center text-slate-400">No records found.</td></tr>' : ''}</tbody></table></div>
+                        </div>
+                    </div>
+                </div>`;
+            lucide.createIcons();
+        }
+
+        function renderReports() {
+             const container = document.getElementById('content-area');
+            const currentYear = new Date().getFullYear();
+            const reportData = [];
+            contractors.forEach(c => {
+                const total = payments.filter(p => p.contractorId === c.id && p.date.startsWith(currentYear)).reduce((sum, p) => sum + parseFloat(p.amount), 0);
+                if (total > 0) reportData.push({ ...c, total });
+            });
+            reportData.sort((a,b) => b.total - a.total);
+            const grandTotal = reportData.reduce((acc, c) => acc + c.total, 0);
+
+            container.innerHTML = `
+                <div class="print-header mb-8 text-center hidden"><img src="logo-D2-HVAC-Solutions-preto.png" class="w-32 mx-auto mb-4" onerror="this.style.display='none'"><h1 class="text-3xl font-bold text-slate-900 mb-2">D2 HVAC Solutions</h1><p class="text-slate-600">Contractor Payment Summary (1099 Data)</p><p class="text-sm text-slate-500">Tax Year: ${currentYear}</p></div>
+                <div class="flex flex-col sm:flex-row justify-between items-end gap-4 mb-6 no-print"><div><h2 class="text-2xl font-bold text-slate-800">1099 Report (${currentYear})</h2><p class="text-slate-500">Contractors with activity this year.</p></div><button onclick="window.print()" class="bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-lg transition-all"><i data-lucide="printer"></i> Print</button></div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card">
+                    <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center"><span class="font-bold text-slate-700">TOTAL OUTFLOW</span><span class="font-bold text-xl text-slate-900">$${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}</span></div>
+                    <div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-white text-slate-500 border-b border-slate-200"><tr><th class="px-6 py-4 font-bold uppercase text-xs tracking-wider">Contractor Entity</th><th class="px-6 py-4 font-bold uppercase text-xs tracking-wider">Tax ID (EIN)</th><th class="px-6 py-4 font-bold uppercase text-xs tracking-wider text-center">W9 Status</th><th class="px-6 py-4 font-bold uppercase text-xs tracking-wider text-right">Total Paid</th></tr></thead><tbody class="divide-y divide-slate-100">${reportData.map(r => `<tr class="${r.total >= 600 ? 'bg-red-50/50' : ''}"><td class="px-6 py-4"><p class="font-bold text-slate-800 text-base">${r.businessName}</p><p class="text-xs text-slate-500">${r.address}</p></td><td class="px-6 py-4 font-mono text-slate-600">${r.ein}</td><td class="px-6 py-4 text-center">${r.w9OnFile ? '<span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">Active</span>' : '<span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">MISSING</span>'}</td><td class="px-6 py-4 text-right"><p class="font-bold text-slate-800 text-base">$${r.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>${r.total >= 600 ? '<p class="text-[10px] text-red-500 font-bold uppercase tracking-wide">1099 Required</p>' : ''}</td></tr>`).join('')}${reportData.length === 0 ? '<tr><td colspan="4" class="p-12 text-center text-slate-400">No payment activity recorded for this year.</td></tr>' : ''}</tbody></table></div>
+                </div>`;
+            lucide.createIcons();
+        }
+
+        // --- COMMON UTILS ---
+        function openEditModal(id) {
+            const c = contractors.find(x => x.id === id); if(!c) return;
+            document.getElementById('ec-id').value = c.id;
+            document.getElementById('ec-name').value = c.businessName;
+            document.getElementById('ec-contact').value = c.contactName || '';
+            document.getElementById('ec-ein').value = c.ein;
+            document.getElementById('ec-email').value = c.email || '';
+            document.getElementById('ec-phone').value = c.phone || '';
+            document.getElementById('ec-address').value = c.address;
+            document.getElementById('ec-new-file').value = '';
+            
+            if(c.w9OnFile && c.w9File) {
+                document.getElementById('ec-current-w9').classList.remove('hidden');
+                document.getElementById('ec-no-w9').classList.add('hidden');
+                document.getElementById('ec-download-link').href = c.w9File;
+            } else {
+                document.getElementById('ec-current-w9').classList.add('hidden');
+                document.getElementById('ec-no-w9').classList.remove('hidden');
+            }
+            document.getElementById('edit-c-modal').classList.remove('hidden');
+        }
+        function closeEditModal() { document.getElementById('edit-c-modal').classList.add('hidden'); }
+        function closeUserModal() { document.getElementById('user-modal').classList.add('hidden'); }
+        
+        async function handleUpdateContractor(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-update-c'); btn.disabled = true;
+            const id = document.getElementById('ec-id').value;
+            const fileInput = document.getElementById('ec-new-file');
+            try {
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                const updateData = {
+                    businessName: document.getElementById('ec-name').value,
+                    contactName: document.getElementById('ec-contact').value,
+                    ein: document.getElementById('ec-ein').value,
+                    email: document.getElementById('ec-email').value,
+                    phone: document.getElementById('ec-phone').value,
+                    address: document.getElementById('ec-address').value,
+                };
+                if(fileInput.files[0]) {
+                    updateData.w9File = await uploadFile(fileInput.files[0]);
+                    updateData.w9OnFile = true;
+                }
+                await collectionRef.doc(id).update(updateData);
+                closeEditModal(); showToast("Updated");
+            } catch(e) { console.error(e); alert("Error"); }
+            finally { btn.disabled = false; }
+        }
+
+        async function handleSavePayment(e) {
+            e.preventDefault();
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('payments') : db.collection('payments');
+            await collectionRef.add({
+                contractorId: document.getElementById('np-contractor').value,
+                amount: parseFloat(document.getElementById('np-amount').value),
+                date: document.getElementById('np-date').value,
+                method: document.getElementById('np-method').value,
+                description: document.getElementById('np-memo').value,
+                createdAt: new Date().toISOString()
+            });
+            e.target.reset();
+            document.getElementById('np-date').value = new Date().toISOString().split('T')[0];
+            showToast("Payment Recorded");
+        }
+
+        async function handleSaveContractor(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-c'); btn.disabled = true;
+            const fileInput = document.getElementById('nc-file');
+            let fileData = null;
+            try {
+                if(fileInput.files[0]) fileData = await uploadFile(fileInput.files[0]);
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('nc-name').value,
+                    contactName: document.getElementById('nc-contact').value,
+                    ein: document.getElementById('nc-ein').value,
+                    email: document.getElementById('nc-email').value,
+                    phone: document.getElementById('nc-phone').value,
+                    address: document.getElementById('nc-address').value,
+                    w9OnFile: !!fileData,
+                    w9File: fileData,
+                    createdAt: new Date().toISOString()
+                });
+                document.getElementById('add-c-form').classList.add('hidden');
+                e.target.reset();
+                showToast("Contractor Registered");
+            } catch (err) { alert("Error: " + err.message); } 
+            finally { btn.disabled = false; }
+        }
+
+        async function handlePublicSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-public-submit');
+            btn.textContent = "Submitting...";
+            btn.disabled = true;
+            const fileInput = document.getElementById('pb-file');
+            let fileData = null;
+            try {
+                if(fileInput.files[0]) fileData = await uploadFile(fileInput.files[0]);
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('pb-name').value,
+                    contactName: document.getElementById('pb-contact').value,
+                    ein: document.getElementById('pb-ein').value,
+                    email: document.getElementById('pb-email').value,
+                    phone: document.getElementById('pb-phone').value,
+                    address: document.getElementById('pb-address').value,
+                    w9OnFile: !!fileData,
+                    w9File: fileData,
+                    createdAt: new Date().toISOString(),
+                    source: 'public_link'
+                });
+                document.getElementById('public-form').classList.add('hidden');
+                document.getElementById('public-success').classList.remove('hidden');
+            } catch (err) { alert("Error: " + err.message); btn.textContent = "Submit Registration"; btn.disabled = false; }
+        }
+
+        async function handleDeleteFromModal() {
+            const id = document.getElementById('ec-id').value;
+            if(!confirm("Are you sure?")) return;
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+            await collectionRef.doc(id).delete();
+            closeEditModal();
+            showToast("Deleted");
+        }
+
+        async function deleteUser(id) {
+             if(!confirm("Remove User?")) return;
+             const isAIPreview = typeof __app_id !== 'undefined';
+             const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+             await uCollection.doc(id).delete();
+             showToast("User Removed");
+        }
+
+        // ... File upload & other generic utils remain same ...
         async function uploadFile(file) {
             if (storage) {
                 const storageRef = storage.ref();

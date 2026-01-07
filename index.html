@@ -27,7 +27,7 @@
         /* Print Styles */
         @media print {
             body { background: white; }
-            #sidebar, #login-screen, .no-print, #edit-c-modal { display: none !important; }
+            #sidebar, #login-screen, .no-print, #edit-c-modal, #public-onboard-view { display: none !important; }
             #main-content { margin: 0; padding: 0; width: 100%; height: auto; overflow: visible; }
             .card { box-shadow: none; border: none; }
             table { width: 100%; border-collapse: collapse; }
@@ -38,6 +38,69 @@
     </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans h-screen flex overflow-hidden">
+
+    <!-- PUBLIC ONBOARDING VIEW (Hidden by default) -->
+    <div id="public-onboard-view" class="fixed inset-0 z-[60] bg-slate-100 overflow-y-auto hidden">
+        <div class="min-h-screen flex flex-col items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 border border-slate-200">
+                <div class="flex flex-col items-center mb-8 border-b border-slate-100 pb-6">
+                    <img src="logo-D2-HVAC-Solutions-preto.png" alt="D2 HVAC Logo" class="w-40 mb-4 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="w-16 h-16 bg-blue-600 rounded-xl hidden items-center justify-center text-white mx-auto">
+                        <i data-lucide="building-2" class="w-10 h-10"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-slate-800 mt-4">Contractor Registration</h1>
+                    <p class="text-slate-500 text-center mt-2">Please fill out your business details and attach your W-9 form.</p>
+                </div>
+
+                <form id="public-form" onsubmit="handlePublicSubmit(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Business Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="pb-name" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Contact Person</label>
+                            <input type="text" id="pb-contact" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">EIN / SSN <span class="text-red-500">*</span></label>
+                            <input type="text" id="pb-ein" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+                            <input type="email" id="pb-email" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
+                            <input type="text" id="pb-phone" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Mailing Address <span class="text-red-500">*</span></label>
+                            <input type="text" id="pb-address" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                        <label class="block text-sm font-bold text-blue-900 mb-3">Upload W-9 Form (PDF or Image)</label>
+                        <input type="file" id="pb-file" accept="image/*,.pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-white rounded-lg border border-blue-100">
+                        <p class="text-xs text-blue-400 mt-2">Max file size: 5MB (Storage) or 1MB (Database Fallback).</p>
+                    </div>
+
+                    <button type="submit" id="btn-public-submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black shadow-lg transform transition-all hover:-translate-y-1">
+                        Submit Registration
+                    </button>
+                </form>
+
+                <div id="public-success" class="hidden text-center py-12">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="check" class="w-10 h-10"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">Registration Successful!</h2>
+                    <p class="text-slate-500">Thank you. Your information has been securely received by D2 HVAC Solutions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4">
@@ -64,12 +127,12 @@
                     <input type="password" id="password" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••" required>
                 </div>
                 <div id="login-error" class="text-red-500 text-sm text-center hidden">Invalid credentials. Access denied.</div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-blue-600/20">
+                <button type="submit" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-blue-600/20">
                     Sign In
                 </button>
             </form>
             <div class="mt-6 text-center text-xs text-slate-400">
-                &copy; 2025 D2 HVAC Solutions. Secured System.
+                &copy; 2026 D2 HVAC Solutions. Secured System.
             </div>
         </div>
     </div>
@@ -187,6 +250,9 @@
             <button onclick="router('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all">
                 <i data-lucide="file-bar-chart" class="w-5 h-5"></i> 1099 Reports
             </button>
+            <button onclick="router('users')" id="nav-users" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all">
+                <i data-lucide="user-plus" class="w-5 h-5"></i> Users
+            </button>
         </nav>
 
         <div class="p-4 border-t border-slate-800">
@@ -224,7 +290,7 @@
     <!-- SCRIPTS -->
     <script>
         // --- CONFIGURATION ---
-        const CREDENTIALS = {
+        const MASTER_CREDENTIALS = {
             user: "dante.frota@d2hvacsolutions.com",
             pass: "!D2hvac!2025"
         };
@@ -256,36 +322,90 @@
         // --- STATE ---
         let contractors = [];
         let payments = [];
+        let appUsers = [];
         let listeners = [];
+        let isPublicMode = false;
 
-        // --- AUTH & LOGIN ---
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        // --- INITIALIZATION ---
+        
+        // Check for Public Link Mode
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mode') === 'onboard') {
+            isPublicMode = true;
+            initPublicMode();
+        } else {
+            // Setup Login Listeners
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+        }
+
+        async function initPublicMode() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('public-onboard-view').classList.remove('hidden');
+            lucide.createIcons();
+            
+            // Auto sign-in anonymously to allow writing to DB
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                 await auth.signInWithCustomToken(__initial_auth_token);
+            } else {
+                 await auth.signInAnonymously();
+            }
+        }
+
+        async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('login-error');
+            const btn = document.getElementById('btn-login');
 
-            if (email === CREDENTIALS.user && pass === CREDENTIALS.pass) {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            btn.textContent = "Verifying...";
+            btn.disabled = true;
+
+            try {
+                // 1. Authenticate with Firebase first (Anon) to read DB
+                if (!auth.currentUser) {
+                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await auth.signInWithCustomToken(__initial_auth_token);
                     } else {
                         await auth.signInAnonymously();
                     }
-                    
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('sidebar').classList.remove('hidden');
-                    document.getElementById('main-content').classList.remove('hidden');
-                    initApp();
-                } catch (err) {
-                    console.error(err);
-                    errorDiv.textContent = "System connection error. Check console.";
-                    errorDiv.classList.remove('hidden');
                 }
-            } else {
+
+                // 2. Check Master Creds
+                if (email === MASTER_CREDENTIALS.user && pass === MASTER_CREDENTIALS.pass) {
+                    grantAccess();
+                    return;
+                }
+
+                // 3. Check DB Users
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const usersCollection = isAIPreview 
+                    ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users')
+                    : db.collection('app_users');
+                
+                const snapshot = await usersCollection.where('email', '==', email).where('password', '==', btoa(pass)).get();
+                
+                if (!snapshot.empty) {
+                    grantAccess();
+                } else {
+                    throw new Error("Invalid Credentials");
+                }
+
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = "Invalid email or password.";
                 errorDiv.classList.remove('hidden');
+                btn.textContent = "Sign In";
+                btn.disabled = false;
             }
-        });
+        }
+
+        function grantAccess() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('sidebar').classList.remove('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            initApp();
+        }
 
         function logout() {
             window.location.reload();
@@ -296,12 +416,16 @@
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
             const isAIPreview = typeof __app_id !== 'undefined';
+            
             const cCollection = isAIPreview 
                 ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors')
                 : db.collection('contractors'); 
             const pCollection = isAIPreview
                 ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('payments')
                 : db.collection('payments'); 
+            const uCollection = isAIPreview
+                ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users')
+                : db.collection('app_users');
 
             listeners.push(cCollection.onSnapshot(snap => {
                 contractors = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -315,6 +439,11 @@
                 if(window.currentView === 'dashboard') renderDashboard();
                 if(window.currentView === 'payments') renderPayments();
                 if(window.currentView === 'reports') renderReports();
+            }));
+
+            listeners.push(uCollection.onSnapshot(snap => {
+                appUsers = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                if(window.currentView === 'users') renderUsers();
             }));
 
             router('dashboard');
@@ -334,7 +463,13 @@
                 activeBtn.classList.remove('hover:bg-slate-800');
             }
 
-            const titles = { dashboard: 'Overview', contractors: 'Contractor Management', payments: 'Payment Ledger', reports: 'Tax Reports (1099)' };
+            const titles = { 
+                dashboard: 'Overview', 
+                contractors: 'Contractor Management', 
+                payments: 'Payment Ledger', 
+                reports: 'Tax Reports (1099)',
+                users: 'User Management' 
+            };
             document.getElementById('page-title').textContent = titles[view];
             document.getElementById('content-area').innerHTML = '';
             
@@ -342,6 +477,7 @@
             if(view === 'contractors') renderContractors();
             if(view === 'payments') renderPayments();
             if(view === 'reports') renderReports();
+            if(view === 'users') renderUsers();
             lucide.createIcons();
         }
 
@@ -368,6 +504,50 @@
             });
         }
 
+        // --- PUBLIC FORM LOGIC ---
+        async function handlePublicSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-public-submit');
+            btn.textContent = "Submitting...";
+            btn.disabled = true;
+
+            const fileInput = document.getElementById('pb-file');
+            let fileData = null;
+
+            try {
+                if(fileInput.files[0]) {
+                    fileData = await uploadFile(fileInput.files[0]);
+                }
+
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview 
+                    ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors')
+                    : db.collection('contractors');
+
+                await collectionRef.add({
+                    businessName: document.getElementById('pb-name').value,
+                    contactName: document.getElementById('pb-contact').value,
+                    ein: document.getElementById('pb-ein').value,
+                    email: document.getElementById('pb-email').value,
+                    phone: document.getElementById('pb-phone').value,
+                    address: document.getElementById('pb-address').value,
+                    w9OnFile: !!fileData,
+                    w9File: fileData,
+                    createdAt: new Date().toISOString(),
+                    source: 'public_link'
+                });
+
+                document.getElementById('public-form').classList.add('hidden');
+                document.getElementById('public-success').classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                alert("Error submitting: " + err.message);
+                btn.textContent = "Submit Registration";
+                btn.disabled = false;
+            }
+        }
+
         // --- CONTRACTOR MODAL LOGIC ---
         function openEditModal(id) {
             const c = contractors.find(x => x.id === id);
@@ -381,7 +561,7 @@
             document.getElementById('ec-email').value = c.email || '';
             document.getElementById('ec-phone').value = c.phone || '';
             document.getElementById('ec-address').value = c.address;
-            document.getElementById('ec-new-file').value = ''; // Reset file input
+            document.getElementById('ec-new-file').value = ''; 
 
             // W9 Section Logic
             if(c.w9OnFile && c.w9File) {
@@ -459,6 +639,46 @@
             }
         }
 
+        // --- USER MANAGEMENT LOGIC ---
+        async function handleAddUser(e) {
+            e.preventDefault();
+            const email = document.getElementById('nu-email').value;
+            const pass = document.getElementById('nu-pass').value;
+
+            if(!email || !pass) return alert("All fields required");
+
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const uCollection = isAIPreview 
+                ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users')
+                : db.collection('app_users');
+
+            try {
+                // Simple Obfuscation for this level of app
+                await uCollection.add({
+                    email: email,
+                    password: btoa(pass), // Basic Base64 encoding
+                    createdAt: new Date().toISOString()
+                });
+                document.getElementById('nu-email').value = '';
+                document.getElementById('nu-pass').value = '';
+                showToast("User Added Successfully");
+            } catch(err) {
+                console.error(err);
+                alert("Error adding user: " + err.message);
+            }
+        }
+
+        async function deleteUser(id) {
+             if(confirm("Remove this user's access?")){
+                 const isAIPreview = typeof __app_id !== 'undefined';
+                 const uCollection = isAIPreview 
+                    ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users')
+                    : db.collection('app_users');
+                 await uCollection.doc(id).delete();
+                 showToast("User Removed");
+             }
+        }
+
         // --- VIEWS ---
         function renderDashboard() {
             const container = document.getElementById('content-area');
@@ -509,23 +729,37 @@
                         <img src="logo-D2-HVAC-Solutions-preto.png" class="w-24 mb-4 bg-white p-2 rounded-lg opacity-90" onerror="this.style.display='none'">
                         <h2 class="text-2xl font-bold mb-2">D2 HVAC Admin</h2>
                         <p class="text-slate-400 mb-6 max-w-xs text-sm">Welcome back, Dante. Your system is secure and ready for tax season.</p>
-                        <div class="flex gap-2 text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v2.6 PRO</span></div>
+                        <div class="flex gap-2 text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v3.0 PRO</span></div>
                     </div>
                 </div>`;
             lucide.createIcons();
         }
 
+        function copyLink() {
+            const url = window.location.href.split('?')[0] + "?mode=onboard";
+            navigator.clipboard.writeText(url).then(() => {
+                showToast("Link Copied to Clipboard!");
+            }).catch(err => {
+                prompt("Copy this link manually:", url);
+            });
+        }
+
         function renderContractors() {
             const container = document.getElementById('content-area');
             container.innerHTML = `
-                <div class="flex justify-between mb-6 no-print">
+                <div class="flex flex-col sm:flex-row justify-between mb-6 no-print gap-4">
                     <div class="relative w-full max-w-sm">
                         <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
                         <input type="text" id="c-search" onkeyup="filterContractors()" placeholder="Search contractors..." class="pl-10 pr-4 py-2 w-full rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-                    <button onclick="showAddContractorModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-sm">
-                        <i data-lucide="plus"></i> Add Contractor
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="copyLink()" class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-sm transition-colors">
+                            <i data-lucide="share-2" class="w-4 h-4"></i> Share Onboarding Link
+                        </button>
+                        <button onclick="showAddContractorModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-sm transition-colors">
+                            <i data-lucide="plus"></i> Add Contractor
+                        </button>
+                    </div>
                 </div>
                 <div id="add-c-form" class="hidden bg-blue-50 border border-blue-200 p-6 rounded-xl mb-6">
                     <h3 class="font-bold text-blue-900 mb-4">New Contractor Registration</h3>
@@ -629,7 +863,15 @@
                                 </div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Amount ($)</label><input type="number" step="0.01" id="np-amount" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"></div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Date</label><input type="date" id="np-date" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" value="${new Date().toISOString().split('T')[0]}"></div>
-                                <div><label class="text-xs font-bold text-slate-500 uppercase">Method</label><select id="np-method" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"><option>Check</option><option>ACH</option><option>Cash</option><option>Credit Card</option></select></div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Method</label>
+                                    <select id="np-method" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                                        <option>Check</option>
+                                        <option>ACH</option>
+                                        <option>Zelle</option>
+                                        <option>Cash</option>
+                                        <option>Credit Card</option>
+                                    </select>
+                                </div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Memo</label><input type="text" id="np-memo" placeholder="Invoice #..." class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"></div>
                                 <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700 shadow-sm">Record Payment</button>
                             </form>
@@ -688,6 +930,39 @@
                         </tbody>
                     </table>
                 </div>`;
+            lucide.createIcons();
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('content-area');
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5"></i> Add Authorized User</h2>
+                        <form onsubmit="handleAddUser(event)" class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Email</label><input type="email" id="nu-email" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Password</label><input type="password" id="nu-pass" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 shadow-sm">Create User</button>
+                        </form>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h2 class="text-lg font-bold text-slate-800 mb-4">Current Authorized Users</h2>
+                        <div class="space-y-2">
+                             <div class="flex justify-between items-center p-3 bg-slate-50 rounded border border-slate-100">
+                                <div><p class="font-bold text-slate-800">Master Admin</p><p class="text-xs text-slate-500">dante.frota@d2hvacsolutions.com</p></div>
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">System Owner</span>
+                            </div>
+                            ${appUsers.map(u => `
+                                <div class="flex justify-between items-center p-3 bg-white rounded border border-slate-200 hover:border-blue-300 transition-colors">
+                                    <div><p class="font-bold text-slate-800">Authorized User</p><p class="text-xs text-slate-500">${u.email}</p></div>
+                                    <button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            `).join('')}
+                            ${appUsers.length === 0 ? '<p class="text-slate-400 text-sm italic">No additional users created yet.</p>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
             lucide.createIcons();
         }
 

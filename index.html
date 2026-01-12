@@ -60,7 +60,6 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800 mt-4 text-center">Contractor Registration</h1>
                     <p class="text-slate-500 text-center mt-2 text-sm">Please fill out your details below.</p>
                 </div>
-                <!-- TYPE BUTTON prevents reload -->
                 <form id="public-form" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -149,7 +148,6 @@
     <div id="user-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <h3 id="um-title" class="font-bold text-xl text-slate-800 mb-4">Manage User</h3>
-            <!-- TYPE BUTTON PREVENTS RELOAD -->
             <form id="user-form" class="space-y-4">
                 <input type="hidden" id="um-id">
                 <div>
@@ -180,6 +178,7 @@
                 </div>
                 <div class="flex justify-end gap-2 mt-4">
                     <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                    <!-- FIXED: type="button" and direct call -->
                     <button type="button" onclick="handleSaveUser()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
                 </div>
             </form>
@@ -566,6 +565,7 @@
             if (role !== 'contractor') {
                 nav.innerHTML += createBtn('dashboard', 'layout-dashboard', 'Dashboard');
                 nav.innerHTML += createBtn('contractors', 'users', 'Contractors');
+                // Explicitly clear filter when clicking Payment Menu
                 nav.innerHTML += createBtn('payments', 'dollar-sign', 'Payments', "pendingLedgerFilter = null; router('payments'); if(window.innerWidth < 768) toggleMobileMenu();");
                 nav.innerHTML += createBtn('reports', 'file-bar-chart', 'Financial Reports');
             } else {
@@ -653,7 +653,7 @@
                         <img src="logo-D2-HVAC-Solutions-preto.png" class="w-24 mb-4 bg-white p-2 rounded-lg opacity-90" onerror="this.style.display='none'">
                         <h2 class="text-xl md:text-2xl font-bold mb-2">Welcome Back, ${currentUser.name.split(' ')[0]}</h2>
                         <p class="text-slate-400 mb-6 max-w-xs text-xs md:text-sm">System is secure and up to date.</p>
-                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v6.0 FINAL</span></div>
+                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v6.1 Final</span></div>
                     </div>
                 </div>`;
             lucide.createIcons();
@@ -775,10 +775,7 @@
             renderFileList();
         }
 
-        async function handleUpdateContractor(e) {
-            // No preventDefault needed as button is type="button" but safe to check
-            if(e) e.preventDefault();
-            
+        async function handleUpdateContractor() {
             const btn = document.getElementById('btn-update-c'); btn.disabled = true;
             const id = document.getElementById('ec-id').value;
             const fileInput = document.getElementById('ec-new-file');

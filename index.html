@@ -59,26 +59,49 @@
                         <i data-lucide="building-2" class="w-10 h-10"></i>
                     </div>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800 mt-4 text-center">Contractor Registration</h1>
-                    <p class="text-slate-500 text-center mt-2 text-sm">Please fill out your business details and attach your W-9 form.</p>
+                    <p class="text-slate-500 text-center mt-2 text-sm">Please fill out your details below.</p>
                 </div>
                 <form id="public-form" onsubmit="handlePublicSubmit(event)" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="text" id="pb-name" required placeholder="Business Name *" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <input type="text" id="pb-contact" placeholder="Contact Person" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <input type="text" id="pb-ein" required placeholder="EIN / SSN *" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-mono">
-                        <input type="email" id="pb-email" placeholder="Email Address" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <input type="text" id="pb-phone" placeholder="Phone Number" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <input type="text" id="pb-address" required placeholder="Mailing Address *" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Business Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="pb-name" required placeholder="Business Name" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Person</label>
+                            <input type="text" id="pb-contact" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">EIN / SSN</label>
+                            <input type="text" id="pb-ein" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+                            <input type="email" id="pb-email" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone</label>
+                            <input type="text" id="pb-phone" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Address</label>
+                            <input type="text" id="pb-address" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
                     </div>
                     <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
-                        <label class="block text-sm font-bold text-blue-900 mb-3">Upload W-9 Form</label>
-                        <input type="file" id="pb-file" accept="image/*,.pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-white rounded-lg border border-blue-100">
+                        <label class="block text-sm font-bold text-blue-900 mb-3">Upload W-9 Form (PDF or Photo)</label>
+                        <!-- ACCEPT changed to include application/pdf explicitly for mobile file pickers -->
+                        <input type="file" id="pb-file" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-white rounded-lg border border-blue-100">
+                        <p class="text-xs text-blue-400 mt-2">You can upload a PDF document or a photo.</p>
                     </div>
                     <button type="submit" id="btn-public-submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black shadow-lg">Submit Registration</button>
                 </form>
                 <div id="public-success" class="hidden text-center py-12">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="check" class="w-10 h-10"></i>
+                    </div>
                     <h2 class="text-2xl font-bold text-slate-800 mb-2">Registration Successful!</h2>
-                    <p class="text-slate-500">Thank you. Your information has been securely received.</p>
+                    <p class="text-slate-500">Thank you. Your information has been securely received by D2 HVAC Solutions.</p>
                 </div>
             </div>
         </div>
@@ -191,7 +214,7 @@
                         <a id="ec-download-link" target="_blank" class="text-blue-600 text-xs font-bold hover:underline">Download</a>
                     </div>
                     <div id="ec-no-w9" class="text-sm text-slate-500 mb-4 hidden px-2">No W-9 on file.</div>
-                    <input type="file" id="ec-new-file" accept="image/*,.pdf" class="block w-full text-xs text-slate-500">
+                    <input type="file" id="ec-new-file" accept="image/*,application/pdf" class="block w-full text-xs text-slate-500">
                 </div>
                 <div class="flex justify-between pt-4 border-t border-slate-100">
                     <button type="button" onclick="handleDeleteFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button>
@@ -730,6 +753,161 @@
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = reject;
             });
+        }
+        
+        async function handleSavePayment(e) {
+            e.preventDefault();
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('payments') : db.collection('payments');
+            await collectionRef.add({
+                contractorId: document.getElementById('np-contractor').value,
+                amount: parseFloat(document.getElementById('np-amount').value),
+                date: document.getElementById('np-date').value,
+                method: document.getElementById('np-method').value,
+                description: document.getElementById('np-memo').value,
+                createdAt: new Date().toISOString()
+            });
+            e.target.reset();
+            document.getElementById('np-date').value = new Date().toISOString().split('T')[0];
+            showToast("Payment Recorded");
+            if(window.currentView === 'payments') renderPayments();
+        }
+        
+        async function handleUpdateContractor(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-update-c'); btn.disabled = true;
+            const id = document.getElementById('ec-id').value;
+            const fileInput = document.getElementById('ec-new-file');
+            try {
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                const updateData = {
+                    businessName: document.getElementById('ec-name').value,
+                    contactName: document.getElementById('ec-contact').value,
+                    ein: document.getElementById('ec-ein').value,
+                    email: document.getElementById('ec-email').value,
+                    phone: document.getElementById('ec-phone').value,
+                    address: document.getElementById('ec-address').value,
+                };
+                if(fileInput.files[0]) {
+                    updateData.w9File = await uploadFile(fileInput.files[0]);
+                    updateData.w9OnFile = true;
+                }
+                await collectionRef.doc(id).update(updateData);
+                closeEditModal(); showToast("Updated");
+            } catch(e) { console.error(e); alert("Error"); }
+            finally { btn.disabled = false; }
+        }
+        
+        function openEditModal(id) {
+            const c = contractors.find(x => x.id === id); if(!c) return;
+            document.getElementById('ec-id').value = c.id;
+            document.getElementById('ec-name').value = c.businessName;
+            document.getElementById('ec-contact').value = c.contactName || '';
+            document.getElementById('ec-ein').value = c.ein;
+            document.getElementById('ec-email').value = c.email || '';
+            document.getElementById('ec-phone').value = c.phone || '';
+            document.getElementById('ec-address').value = c.address;
+            document.getElementById('ec-new-file').value = '';
+            if(c.w9OnFile && c.w9File) {
+                document.getElementById('ec-current-w9').classList.remove('hidden');
+                document.getElementById('ec-no-w9').classList.add('hidden');
+                document.getElementById('ec-download-link').href = c.w9File;
+            } else {
+                document.getElementById('ec-current-w9').classList.add('hidden');
+                document.getElementById('ec-no-w9').classList.remove('hidden');
+            }
+            document.getElementById('edit-c-modal').classList.remove('hidden');
+        }
+        function closeEditModal() { document.getElementById('edit-c-modal').classList.add('hidden'); }
+        async function handleDeleteFromModal() {
+            const id = document.getElementById('ec-id').value;
+            if(!confirm("Are you sure?")) return;
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+            await collectionRef.doc(id).delete();
+            closeEditModal();
+            showToast("Deleted");
+        }
+        
+        async function deleteUser(id) {
+             if(!confirm("Remove User?")) return;
+             const isAIPreview = typeof __app_id !== 'undefined';
+             const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+             await uCollection.doc(id).delete();
+             showToast("User Removed");
+        }
+        function openUserModal(user = null) {
+            document.getElementById('user-modal').classList.remove('hidden');
+            const roleSelect = document.getElementById('um-role');
+            const cSelect = document.getElementById('um-contractor-link');
+            cSelect.innerHTML = '<option value="">Select Contractor...</option>' + contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('');
+            if(user) {
+                document.getElementById('um-title').textContent = "Edit User & Password";
+                document.getElementById('um-id').value = user.id;
+                document.getElementById('um-name').value = user.name || '';
+                document.getElementById('um-email').value = user.email;
+                document.getElementById('um-pass').value = atob(user.password);
+                roleSelect.value = user.role || 'employee';
+                cSelect.value = user.linkedContractorId || '';
+            } else {
+                document.getElementById('um-title').textContent = "Add New User";
+                document.getElementById('um-id').value = '';
+                document.getElementById('um-name').value = '';
+                document.getElementById('um-email').value = '';
+                document.getElementById('um-pass').value = '';
+                roleSelect.value = 'employee';
+                cSelect.value = '';
+            }
+            toggleContractorSelect();
+        }
+        function closeUserModal() { document.getElementById('user-modal').classList.add('hidden'); }
+        function toggleContractorSelect() {
+            const role = document.getElementById('um-role').value;
+            const div = document.getElementById('um-contractor-div');
+            if (role === 'contractor') div.classList.remove('hidden'); else div.classList.add('hidden');
+        }
+        async function handleSaveUser(e) {
+            e.preventDefault();
+            const id = document.getElementById('um-id').value;
+            const name = document.getElementById('um-name').value;
+            const email = document.getElementById('um-email').value;
+            const pass = document.getElementById('um-pass').value;
+            const role = document.getElementById('um-role').value;
+            const linkedId = document.getElementById('um-contractor-link').value;
+            if (role === 'contractor' && !linkedId) return alert("Please select a Contractor profile.");
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+            const data = { name: name, email: email, password: btoa(pass), role: role, linkedContractorId: linkedId || null, updatedAt: new Date().toISOString() };
+            try {
+                if(id) await uCollection.doc(id).update(data); else await uCollection.add({...data, createdAt: new Date().toISOString()});
+                closeUserModal(); showToast(id ? "User Updated" : "User Created");
+            } catch(err) { alert(err.message); }
+        }
+        async function handlePublicSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-public-submit'); btn.textContent = "Submitting..."; btn.disabled = true;
+            const fileInput = document.getElementById('pb-file');
+            let fileData = null;
+            try {
+                if(fileInput.files[0]) fileData = await uploadFile(fileInput.files[0]);
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('pb-name').value,
+                    contactName: document.getElementById('pb-contact').value,
+                    ein: document.getElementById('pb-ein').value,
+                    email: document.getElementById('pb-email').value,
+                    phone: document.getElementById('pb-phone').value,
+                    address: document.getElementById('pb-address').value,
+                    w9OnFile: !!fileData,
+                    w9File: fileData,
+                    createdAt: new Date().toISOString(),
+                    source: 'public_link'
+                });
+                document.getElementById('public-form').classList.add('hidden');
+                document.getElementById('public-success').classList.remove('hidden');
+            } catch (err) { alert("Error: " + err.message); btn.textContent = "Submit Registration"; btn.disabled = false; }
         }
     </script>
 </body>

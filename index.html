@@ -46,10 +46,10 @@
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans h-screen flex overflow-hidden relative">
 
-    <!-- MOBILE OVERLAY -->
+    <!-- MOBILE OVERLAY BACKDROP -->
     <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- 1. PUBLIC ONBOARDING VIEW -->
+    <!-- PUBLIC ONBOARDING VIEW -->
     <div id="public-onboard-view" class="fixed inset-0 z-[60] bg-slate-100 overflow-y-auto hidden">
         <div class="min-h-screen flex flex-col items-center justify-center p-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 sm:p-8 border border-slate-200">
@@ -61,77 +61,144 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800 mt-4 text-center">Contractor Registration</h1>
                     <p class="text-slate-500 text-center mt-2 text-sm">Please fill out your details below.</p>
                 </div>
+                <!-- FIXED: onsubmit prevents reload -->
                 <form id="public-form" class="space-y-6" onsubmit="event.preventDefault(); return false;">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Business Name <span class="text-red-500">*</span></label><input type="text" id="pb-name" required placeholder="Business Name" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Person</label><input type="text" id="pb-contact" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">EIN / SSN</label><input type="text" id="pb-ein" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-mono"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label><input type="email" id="pb-email" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone</label><input type="text" id="pb-phone" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Address</label><input type="text" id="pb-address" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Business Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="pb-name" required placeholder="Business Name" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contact Person</label>
+                            <input type="text" id="pb-contact" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">EIN / SSN</label>
+                            <input type="text" id="pb-ein" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+                            <input type="email" id="pb-email" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone</label>
+                            <input type="text" id="pb-phone" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Address</label>
+                            <input type="text" id="pb-address" placeholder="Optional" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
                     </div>
                     <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
-                        <label class="block text-sm font-bold text-blue-900 mb-3">Upload Document</label>
+                        <label class="block text-sm font-bold text-blue-900 mb-3">Upload Document (PDF or Photo)</label>
                         <input type="file" id="pb-file" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-white rounded-lg border border-blue-100">
+                        <p class="text-xs text-blue-400 mt-2">You can upload a PDF document or a photo.</p>
                     </div>
                     <button type="button" id="btn-public-submit" onclick="handlePublicSubmit()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black shadow-lg">Submit Registration</button>
                 </form>
                 <div id="public-success" class="hidden text-center py-12">
-                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="check" class="w-10 h-10"></i>
+                    </div>
                     <h2 class="text-2xl font-bold text-slate-800 mb-2">Registration Successful!</h2>
+                    <p class="text-slate-500">Thank you. Your information has been securely received by D2 HVAC Solutions.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2. LOGIN SCREEN -->
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
             <div class="flex flex-col items-center mb-6">
-                <div class="w-32 mb-6"><img src="logo-D2-HVAC-Solutions-preto.png" alt="D2 HVAC Logo" class="w-full h-auto object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"><div class="w-16 h-16 bg-blue-600 rounded-xl hidden items-center justify-center text-white mx-auto"><i data-lucide="building-2" class="w-10 h-10"></i></div></div>
+                <div class="w-32 mb-6">
+                    <img src="logo-D2-HVAC-Solutions-preto.png" alt="D2 HVAC Logo" class="w-full h-auto object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="w-16 h-16 bg-blue-600 rounded-xl hidden items-center justify-center text-white mx-auto">
+                        <i data-lucide="building-2" class="w-10 h-10"></i>
+                    </div>
+                </div>
                 <h1 class="text-2xl font-bold text-slate-800 text-center">Contractor Management</h1>
                 <p class="text-slate-500 text-sm mt-1">Payment & Compliance Control</p>
             </div>
             <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
                 <div class="relative">
+                    <label class="sr-only">Email</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </div>
                     <input type="email" id="email" autocapitalize="none" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Email" required>
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i data-lucide="mail" class="w-5 h-5"></i></div>
                 </div>
                 <div class="relative">
-                    <input type="password" id="password" autocapitalize="none" class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Password" required>
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i data-lucide="lock" class="w-5 h-5"></i></div>
-                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 z-10"><i id="icon-show" data-lucide="eye" class="w-5 h-5"></i><i id="icon-hide" data-lucide="eye-off" class="w-5 h-5 hidden"></i></button>
+                    <label class="sr-only">Password</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                    </div>
+                    <input type="password" id="password" autocapitalize="none" class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Password" required>
+                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors z-10 cursor-pointer" style="min-width: 40px; justify-content: center;">
+                        <i id="icon-show" data-lucide="eye" class="w-5 h-5"></i>
+                        <i id="icon-hide" data-lucide="eye-off" class="w-5 h-5 hidden"></i>
+                    </button>
                 </div>
                 <div id="login-error" class="text-red-500 text-sm text-center hidden bg-red-50 p-2 rounded">Invalid credentials.</div>
-                <button type="submit" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg">Sign In</button>
+                <button type="submit" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg active:scale-95">Sign In</button>
             </form>
             <div class="mt-6 text-center text-xs text-slate-400">© 2026 D2 HVAC Solutions</div>
         </div>
     </div>
 
-    <!-- 3. USER MODAL -->
+    <!-- ADD/EDIT USER MODAL -->
     <div id="user-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <h3 id="um-title" class="font-bold text-xl text-slate-800 mb-4">Manage User</h3>
+            <!-- FIXED: onsubmit prevents reload -->
             <form id="user-form" class="space-y-4" onsubmit="event.preventDefault(); return false;">
                 <input type="hidden" id="um-id">
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Name</label><input type="text" id="um-name" required class="w-full p-2 border border-slate-300 rounded" placeholder="Name"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label><input type="email" id="um-email" required class="w-full p-2 border border-slate-300 rounded"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" id="um-pass" required class="w-full p-2 border border-slate-300 rounded" placeholder="Password"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label><select id="um-role" onchange="toggleContractorSelect()" class="w-full p-2 bg-white border border-slate-300 rounded"><option value="admin">Admin</option><option value="employee">Employee</option><option value="contractor">Contractor</option></select></div>
-                <div id="um-contractor-div" class="hidden"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Link to Contractor Profile</label><select id="um-contractor-link" class="w-full p-2 bg-white border border-slate-300 rounded"><option value="">Select Contractor...</option></select></div>
-                <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button><button type="button" onclick="handleSaveUser()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Name</label>
+                    <input type="text" id="um-name" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. John Doe">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+                    <input type="email" id="um-email" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+                    <input type="text" id="um-pass" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="New Password">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label>
+                    <select id="um-role" onchange="toggleContractorSelect()" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="admin">Admin (Full Access)</option>
+                        <option value="employee">Employee (No User Mgmt)</option>
+                        <option value="contractor">Contractor (Limited View)</option>
+                    </select>
+                </div>
+                <div id="um-contractor-div" class="hidden">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Link to Contractor Profile</label>
+                    <select id="um-contractor-link" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">Select Contractor...</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                    <button type="button" onclick="handleSaveUser()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- 4. CONTRACTOR EDIT MODAL -->
+    <!-- EDIT CONTRACTOR MODAL (MULTI-FILE & RENAME) -->
     <div id="edit-c-modal" class="fixed inset-0 z-40 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                <div class="flex items-center gap-3"><div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i data-lucide="folder-open" class="w-6 h-6"></i></div><div><h3 class="font-bold text-xl text-slate-800">Contractor Details</h3><p class="text-xs text-slate-500">Edit & Manage Files</p></div></div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i data-lucide="folder-open" class="w-6 h-6"></i></div>
+                    <div><h3 class="font-bold text-xl text-slate-800">Contractor Details</h3><p class="text-xs text-slate-500">Edit & Manage Files</p></div>
+                </div>
                 <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            
+            <!-- FIXED: onsubmit prevents reload -->
             <form id="edit-c-form" class="p-6 space-y-5" onsubmit="event.preventDefault(); return false;">
                 <input type="hidden" id="ec-id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -142,9 +209,17 @@
                     <input type="text" id="ec-phone" placeholder="Phone" class="w-full p-2 border rounded border-slate-300">
                     <input type="text" id="ec-address" required placeholder="Address" class="w-full p-2 border rounded border-slate-300">
                 </div>
+
+                <!-- FILE MANAGEMENT SECTION -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Documents Folder</label>
-                    <div id="ec-file-list" class="space-y-2 mb-4"></div>
+                    
+                    <!-- File List with Editable Names -->
+                    <div id="ec-file-list" class="space-y-2 mb-4">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Add New File -->
                     <div class="bg-white p-3 rounded-lg border border-slate-200">
                         <p class="text-xs font-bold text-blue-600 mb-2">+ Add Document</p>
                         <div class="flex flex-col gap-2">
@@ -153,6 +228,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="flex justify-between pt-4 border-t border-slate-100">
                     <button type="button" onclick="handleDeleteFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Contractor</button>
                     <div class="flex gap-2">
@@ -164,40 +240,81 @@
         </div>
     </div>
 
-    <!-- 5. PAYMENT MODAL -->
+    <!-- EDIT PAYMENT MODAL -->
     <div id="edit-payment-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
             <h3 class="font-bold text-xl text-slate-800 mb-4">Edit Payment</h3>
+            <!-- FIXED: onsubmit prevents reload -->
             <form id="edit-payment-form" class="space-y-4" onsubmit="event.preventDefault(); return false;">
                 <input type="hidden" id="ep-id">
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label><input type="date" id="ep-date" required class="w-full p-2 border border-slate-300 rounded"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contractor</label><select id="ep-contractor" required class="w-full p-2 bg-white border border-slate-300 rounded"></select></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount ($)</label><input type="number" step="0.01" id="ep-amount" required class="w-full p-2 border border-slate-300 rounded"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Method</label><select id="ep-method" class="w-full p-2 bg-white border border-slate-300 rounded"><option>Check</option><option>ACH</option><option>Zelle</option><option>Cash</option><option>Credit Card</option></select></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Memo</label><input type="text" id="ep-memo" class="w-full p-2 border border-slate-300 rounded"></div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
+                    <input type="date" id="ep-date" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contractor</label>
+                    <select id="ep-contractor" required class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <!-- Populated via JS -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount ($)</label>
+                    <input type="number" step="0.01" id="ep-amount" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Method</label>
+                    <select id="ep-method" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option>Check</option>
+                        <option>ACH</option>
+                        <option>Zelle</option>
+                        <option>Cash</option>
+                        <option>Credit Card</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Memo</label>
+                    <input type="text" id="ep-memo" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
                 <div class="flex justify-between pt-4 mt-2 border-t border-slate-100">
                      <button type="button" onclick="handleDeletePaymentFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button>
-                    <div class="flex gap-2"><button type="button" onclick="closeEditPaymentModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button><button type="button" id="btn-update-p" onclick="handleUpdatePayment()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeEditPaymentModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                        <button type="button" id="btn-update-p" onclick="handleUpdatePayment()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR NAVIGATION -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transform transition-transform duration-300 -translate-x-full md:translate-x-0 md:static md:h-screen hidden">
         <div class="p-6 border-b border-slate-800 flex items-center gap-3">
              <div class="w-10 h-10 bg-white rounded-lg p-1 flex items-center justify-center">
                 <img src="logo-D2-HVAC-Solutions-preto.png" alt="Logo" class="max-w-full max-h-full" onerror="this.style.display='none'; this.parentElement.innerHTML='<i data-lucide=\'building-2\' class=\'text-blue-600\'></i>'">
             </div>
-            <div><h1 class="font-bold text-white leading-tight">D2 HVAC</h1><p id="user-role-display" class="text-[10px] text-blue-400 uppercase tracking-widest font-bold">Loading...</p></div>
+            <div>
+                <h1 class="font-bold text-white leading-tight">D2 HVAC</h1>
+                <p id="user-role-display" class="text-[10px] text-blue-400 uppercase tracking-widest font-bold">Loading...</p>
+            </div>
         </div>
-        <nav id="nav-container" class="flex-1 p-4 space-y-2 overflow-y-auto"></nav>
+
+        <nav id="nav-container" class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <!-- Nav Items Injected via JS -->
+        </nav>
+
         <div class="p-4 border-t border-slate-800">
             <div class="flex items-center gap-3 mb-4">
-                <div id="user-initials-display" class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs uppercase"><i data-lucide="user"></i></div>
-                <div><p id="user-name-display" class="text-xs font-bold text-white truncate w-32">User</p><p class="text-[10px] text-slate-500">Logged In</p></div>
+                <div id="user-initials-display" class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs uppercase">
+                    <i data-lucide="user"></i>
+                </div>
+                <div>
+                    <p id="user-name-display" class="text-xs font-bold text-white truncate w-32">User</p>
+                    <p class="text-[10px] text-slate-500">Logged In</p>
+                </div>
             </div>
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-xs text-red-400 hover:text-red-300 transition-colors"><i data-lucide="log-out" class="w-3 h-3"></i> Sign Out</button>
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-xs text-red-400 hover:text-red-300 transition-colors">
+                <i data-lucide="log-out" class="w-3 h-3"></i> Sign Out
+            </button>
         </div>
     </aside>
 
@@ -205,7 +322,10 @@
     <main id="main-content" class="flex-1 flex flex-col h-full overflow-y-auto hidden bg-slate-100">
         <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 flex justify-between items-center sticky top-0 z-20 no-print shadow-sm">
             <div class="flex items-center gap-3">
-                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-500 hover:text-slate-800 p-1"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                <!-- MOBILE MENU BUTTON -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-500 hover:text-slate-800 p-1">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
                 <h2 id="page-title" class="text-lg md:text-xl font-bold text-slate-800 truncate">Dashboard</h2>
             </div>
             <div class="text-xs md:text-sm text-slate-500" id="current-date"></div>
@@ -213,7 +333,10 @@
         <div id="content-area" class="p-4 md:p-8 max-w-7xl mx-auto w-full"></div>
     </main>
 
-    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-[70] flex items-center gap-3"><i data-lucide="check-circle" class="text-green-400 w-5 h-5"></i><span id="toast-msg">Success</span></div>
+    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-[70] flex items-center gap-3">
+        <i data-lucide="check-circle" class="text-green-400 w-5 h-5"></i>
+        <span id="toast-msg">Success</span>
+    </div>
 
     <!-- SCRIPTS -->
     <script>
@@ -245,15 +368,23 @@
         let currentEditingFiles = []; 
 
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mode') === 'onboard') {
-            isPublicMode = true;
-            initPublicMode();
-        } else {
-            // LOGIN HANDLER
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            lucide.createIcons();
-            loadSavedFormData();
-        }
+        
+        // --- AUTH & INIT ---
+        window.onload = function() {
+            if (urlParams.get('mode') === 'onboard') {
+                isPublicMode = true;
+                initPublicMode();
+            } else {
+                // Check Persistent Login
+                const storedUser = localStorage.getItem('d2_current_user');
+                if(storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    grantAccess(false); // False means don't reset view, just load
+                } else {
+                    lucide.createIcons(); // Load icons for login screen
+                }
+            }
+        };
 
         async function initPublicMode() {
             document.getElementById('login-screen').classList.add('hidden');
@@ -271,7 +402,10 @@
              const inputs = ['nc-name', 'nc-contact', 'nc-ein', 'nc-email', 'nc-phone', 'nc-address'];
              inputs.forEach(id => {
                  const val = localStorage.getItem('d2_form_' + id);
-                 // Values will be set when the form is rendered
+                 if(val) {
+                     const el = document.getElementById(id);
+                     if(el) el.value = val;
+                 }
              });
         }
         function clearSavedFormData() {
@@ -283,15 +417,27 @@
             const pwdInput = document.getElementById('password');
             const showIcon = document.getElementById('icon-show');
             const hideIcon = document.getElementById('icon-hide');
-            if (pwdInput.type === "password") { pwdInput.type = "text"; showIcon.classList.add('hidden'); hideIcon.classList.remove('hidden'); } 
-            else { pwdInput.type = "password"; showIcon.classList.remove('hidden'); hideIcon.classList.add('hidden'); }
+            if (pwdInput.type === "password") {
+                pwdInput.type = "text";
+                showIcon.classList.add('hidden');
+                hideIcon.classList.remove('hidden');
+            } else {
+                pwdInput.type = "password";
+                showIcon.classList.remove('hidden');
+                hideIcon.classList.add('hidden');
+            }
         }
 
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
-            if (sidebar.classList.contains('-translate-x-full')) { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); } 
-            else { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); }
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
         }
 
         async function handleLogin(e) {
@@ -327,17 +473,28 @@
                 let linkedId = null;
 
                 if (email === MASTER_CREDENTIALS.user.toLowerCase() && pass === MASTER_CREDENTIALS.pass) {
-                    isAuthenticated = true; userRole = 'admin'; userId = 'master'; userName = MASTER_CREDENTIALS.name;
+                    isAuthenticated = true;
+                    userRole = 'admin';
+                    userId = 'master';
+                    userName = MASTER_CREDENTIALS.name;
                 } 
                 
                 if (!isAuthenticated) {
                     const isAIPreview = typeof __app_id !== 'undefined';
-                    const usersCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+                    const usersCollection = isAIPreview 
+                        ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') 
+                        : db.collection('app_users');
+                    
                     const snapshot = await usersCollection.get();
+                    
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         if (data.email && data.email.toLowerCase() === email && data.password === btoa(pass)) {
-                            isAuthenticated = true; userId = doc.id; userRole = data.role || 'employee'; userName = data.name || 'Authorized User'; linkedId = data.linkedContractorId;
+                            isAuthenticated = true;
+                            userId = doc.id;
+                            userRole = data.role || 'employee';
+                            userName = data.name || 'Authorized User';
+                            linkedId = data.linkedContractorId;
                         }
                     });
                 }
@@ -345,31 +502,45 @@
                 if (isAuthenticated) {
                     currentUser = { email: email, role: userRole, id: userId, name: userName, linkedContractorId: linkedId };
                     if(userRole === 'contractor' && !userName && linkedId) currentUser.name = "Contractor"; 
-                    grantAccess();
-                } else { throw new Error("Invalid Credentials"); }
+                    
+                    // SAVE SESSION
+                    localStorage.setItem('d2_current_user', JSON.stringify(currentUser));
+                    
+                    grantAccess(true);
+                } else {
+                    throw new Error("Invalid Credentials");
+                }
 
             } catch (err) {
-                console.error(err);
-                errorDiv.textContent = "Invalid email or password.";
+                console.error("Login Flow Error:", err);
+                errorDiv.textContent = err.message === "Invalid Credentials" ? "Invalid email or password." : ("Error: " + err.message);
                 errorDiv.classList.remove('hidden');
                 btn.textContent = "Sign In";
                 btn.disabled = false;
             }
         }
 
-        function grantAccess() {
+        function grantAccess(isNewLogin = false) {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('sidebar').classList.remove('hidden');
             document.getElementById('main-content').classList.remove('hidden');
+            
             document.getElementById('user-name-display').textContent = currentUser.name || currentUser.email;
             document.getElementById('user-role-display').textContent = (currentUser.role || 'employee').toUpperCase();
-            document.getElementById('user-initials-display').textContent = (currentUser.name || "User").split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            initApp();
+            
+            const name = currentUser.name || "User";
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.getElementById('user-initials-display').textContent = initials;
+
+            initApp(isNewLogin);
         }
 
-        function logout() { window.location.reload(); }
+        function logout() { 
+            localStorage.removeItem('d2_current_user');
+            window.location.reload(); 
+        }
 
-        function initApp() {
+        function initApp(isNewLogin) {
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
             const isAIPreview = typeof __app_id !== 'undefined';
@@ -401,35 +572,54 @@
             }
 
             buildNavigation();
-            router(currentUser.role === 'contractor' ? 'my-profile' : 'dashboard');
+            // If new login, go to dashboard. If refresh, stay on current logic but default to dashboard if undefined
+            if(isNewLogin || !window.currentView) {
+                router(currentUser.role === 'contractor' ? 'my-profile' : 'dashboard');
+            } else {
+                refreshCurrentView();
+            }
         }
 
         function buildNavigation() {
             const nav = document.getElementById('nav-container');
             nav.innerHTML = '';
             const role = currentUser.role || 'employee';
+
             const createBtn = (id, icon, label, onClick = null) => {
                 const clickFn = onClick ? onClick : `router('${id}'); if(window.innerWidth < 768) toggleMobileMenu();`;
                 return `<button onclick="${clickFn}" id="nav-${id}" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-all text-slate-300"><i data-lucide="${icon}" class="w-5 h-5"></i> ${label}</button>`;
             };
+
             if (role !== 'contractor') {
                 nav.innerHTML += createBtn('dashboard', 'layout-dashboard', 'Dashboard');
                 nav.innerHTML += createBtn('contractors', 'users', 'Contractors');
+                // Explicitly clear filter when clicking Payment Menu
                 nav.innerHTML += createBtn('payments', 'dollar-sign', 'Payments', "pendingLedgerFilter = null; router('payments'); if(window.innerWidth < 768) toggleMobileMenu();");
                 nav.innerHTML += createBtn('reports', 'file-bar-chart', 'Financial Reports');
             } else {
                 nav.innerHTML += createBtn('my-profile', 'user', 'My Profile');
             }
-            if (role === 'admin') nav.innerHTML += createBtn('users', 'user-plus', 'Users & Access');
+
+            if (role === 'admin') {
+                nav.innerHTML += createBtn('users', 'user-plus', 'Users & Access');
+            }
             lucide.createIcons();
         }
 
         function router(view) {
             window.currentView = view;
-            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white', 'shadow-lg'); b.classList.add('hover:bg-slate-800', 'text-slate-300'); });
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                b.classList.add('hover:bg-slate-800', 'text-slate-300');
+            });
             const activeBtn = document.getElementById(`nav-${view}`);
-            if(activeBtn) { activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg'); activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300'); }
-            document.getElementById('page-title').textContent = { dashboard: 'Overview', contractors: 'Contractor Management', payments: 'Payment Ledger', reports: 'Financial Reports', users: 'User Access Control', 'my-profile': 'My Contractor Portal' }[view] || view;
+            if(activeBtn) {
+                activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+                activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300');
+            }
+
+            const titles = { dashboard: 'Overview', contractors: 'Contractor Management', payments: 'Payment Ledger', reports: 'Financial Reports', users: 'User Access Control', 'my-profile': 'My Contractor Portal' };
+            document.getElementById('page-title').textContent = titles[view] || view;
             refreshCurrentView();
         }
 
@@ -453,6 +643,7 @@
             const year = new Date().getFullYear();
             const ytd = payments.filter(p => p.date.startsWith(year)).reduce((acc, curr) => acc + (parseFloat(curr.amount)||0), 0);
             const w9Count = contractors.filter(c => c.w9OnFile || (c.files && c.files.length > 0)).length;
+            const missingW9 = totalC - w9Count;
             
             // Build recent transactions
             const recentP = [...payments].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0,5);
@@ -488,11 +679,19 @@
                         <h3 class="font-bold text-lg mb-4 text-slate-800">Recent Transactions</h3>
                         <div class="space-y-3">${recentHtml || '<p class="text-slate-400 text-center py-4">No payments yet.</p>'}</div>
                     </div>
-                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 text-white flex flex-col justify-center items-center text-center shadow-xl">
-                        <img src="logo-D2-HVAC-Solutions-preto.png" class="w-24 mb-4 bg-white p-2 rounded-lg opacity-90" onerror="this.style.display='none'">
-                        <h2 class="text-xl md:text-2xl font-bold mb-2">Welcome Back, ${currentUser.name.split(' ')[0]}</h2>
-                        <p class="text-slate-400 mb-6 max-w-xs text-xs md:text-sm">System is secure and up to date.</p>
-                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v7.2 Fixed</span></div>
+                    <!-- REPLACED BLACK CARD WITH PENDING ACTIONS -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-4">
+                             <div class="p-2 bg-orange-100 text-orange-600 rounded-lg"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+                             <h3 class="font-bold text-lg text-slate-800">Pending Compliance</h3>
+                        </div>
+                        <div class="space-y-4">
+                             <div class="flex justify-between items-center p-3 bg-slate-50 rounded border border-slate-100">
+                                 <span class="text-sm font-bold text-slate-600">Missing W9 Forms</span>
+                                 <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold text-xs">${missingW9} Contractors</span>
+                             </div>
+                             <button onclick="router('reports')" class="w-full text-center text-blue-600 text-sm font-bold hover:underline">View Compliance Report</button>
+                        </div>
                     </div>
                 </div>`;
             lucide.createIcons();
@@ -510,12 +709,20 @@
                 form.classList.remove('hidden');
                 const nameInput = document.getElementById('nc-name');
                 if(nameInput) nameInput.focus();
+                
+                // RESTORE SAVED DATA
+                const inputs = ['nc-name', 'nc-contact', 'nc-ein', 'nc-email', 'nc-phone', 'nc-address'];
+                inputs.forEach(id => {
+                    const val = localStorage.getItem('d2_form_' + id);
+                    if(val) document.getElementById(id).value = val;
+                });
+                
                 form.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
         function renderContractors() {
-            const container = document.getElementById('content-area');
+             const container = document.getElementById('content-area');
             container.innerHTML = `
                 <div class="flex flex-col sm:flex-row justify-between mb-6 no-print gap-4">
                     <div class="relative w-full max-w-sm">
@@ -551,10 +758,7 @@
              const inputs = ['nc-name', 'nc-contact', 'nc-ein', 'nc-email', 'nc-phone', 'nc-address'];
              inputs.forEach(id => {
                  const val = localStorage.getItem('d2_form_' + id);
-                 if(val) {
-                     const el = document.getElementById(id);
-                     if(el) el.value = val;
-                 }
+                 if(val) document.getElementById(id).value = val;
              });
             lucide.createIcons();
         }
@@ -587,7 +791,6 @@
             
             // Prepare Files Array
             currentEditingFiles = c.files || [];
-            // Migration for legacy files
             if(c.w9OnFile && c.w9File && !currentEditingFiles.some(f => f.url === c.w9File)) {
                 currentEditingFiles.push({ name: c.w9FileName || "Original W9", url: c.w9File, date: c.createdAt });
             }
@@ -626,10 +829,7 @@
             renderFileList();
         }
 
-        async function handleUpdateContractor(e) {
-            // No preventDefault needed as button is type="button" but safe to check
-            if(e) e.preventDefault();
-            
+        async function handleUpdateContractor() {
             const btn = document.getElementById('btn-update-c'); btn.disabled = true; btn.textContent = "Saving...";
             const id = document.getElementById('ec-id').value;
             const fileInput = document.getElementById('ec-new-file');
@@ -695,7 +895,11 @@
                     <div class="lg:col-span-2">
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                             <div class="p-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row gap-4 items-end no-print">
-                                <div class="flex-1 w-full"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filter Contractor</label><select id="l-contractor" onchange="filterLedger(this.value)" class="w-full p-1.5 text-sm border rounded"><option value="">All Contractors</option>${contractors.map(c => `<option value="${c.id}" ${c.id === selectedContractorId ? 'selected' : ''}>${c.businessName}</option>`).join('')}</select></div>
+                                <div class="flex-1 w-full"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filter Contractor</label><select id="l-contractor" onchange="filterLedger(this.value)" class="w-full p-1.5 text-sm border rounded">
+                                        <option value="">All Contractors</option>
+                                        ${contractors.map(c => `<option value="${c.id}" ${c.id === selectedContractorId ? 'selected' : ''}>${c.businessName}</option>`).join('')}
+                                    </select>
+                                </div>
                                 <div class="w-full sm:w-auto"><button onclick="window.print()" class="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i> Print</button></div>
                             </div>
                             <div id="ledger-table-container" class="overflow-x-auto"></div>
@@ -718,7 +922,7 @@
                     return `<tr class="hover:bg-slate-50"><td class="px-4 py-3 font-mono text-slate-600">${p.date}</td><td class="px-4 py-3 font-bold text-slate-800">${c.businessName}</td><td class="px-4 py-3 text-slate-500"><span class="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">${p.method}</span>${p.description ? `<span class="ml-2 text-xs opacity-75">${p.description}</span>` : ''}</td><td class="px-4 py-3 text-right font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td class="px-4 py-3 text-center action-col"><button onclick='openEditPaymentModal(${JSON.stringify(p).replace(/'/g, "&apos;")})' class="text-slate-400 hover:text-blue-600 p-1"><i data-lucide="pencil" class="w-4 h-4"></i></button></td></tr>`; 
                 }).join('')}${filtered.length === 0 ? '<tr><td colspan="5" class="p-8 text-center text-slate-400">No records found.</td></tr>' : ''}</tbody></table>`;
             document.getElementById('ledger-table-container').innerHTML = html;
-            lucide.createIcons(); // Ensure icons render
+            lucide.createIcons(); 
         };
 
         // --- PAYMENT EDIT FUNCTIONS ---

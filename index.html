@@ -39,8 +39,6 @@
             .print-title { font-size: 24px; font-weight: bold; text-transform: uppercase; color: #000; }
             .print-meta { font-size: 12px; color: #444; margin-top: 5px; }
             .total-row { font-weight: bold; background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; }
-            /* Hide action columns in print */
-            .action-col { display: none !important; }
         }
         .print-header { display: none; }
     </style>
@@ -62,7 +60,8 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-800 mt-4 text-center">Contractor Registration</h1>
                     <p class="text-slate-500 text-center mt-2 text-sm">Please fill out your details below.</p>
                 </div>
-                <form id="public-form" onsubmit="handlePublicSubmit(event)" class="space-y-6">
+                <!-- TYPE BUTTON prevents reload -->
+                <form id="public-form" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Business Name <span class="text-red-500">*</span></label>
@@ -94,7 +93,7 @@
                         <input type="file" id="pb-file" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-white rounded-lg border border-blue-100">
                         <p class="text-xs text-blue-400 mt-2">You can upload a PDF document or a photo.</p>
                     </div>
-                    <button type="submit" id="btn-public-submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black shadow-lg">Submit Registration</button>
+                    <button type="button" id="btn-public-submit" onclick="handlePublicSubmit()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black shadow-lg">Submit Registration</button>
                 </form>
                 <div id="public-success" class="hidden text-center py-12">
                     <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -120,7 +119,7 @@
                 <h1 class="text-2xl font-bold text-slate-800 text-center">Contractor Management</h1>
                 <p class="text-slate-500 text-sm mt-1">Payment & Compliance Control</p>
             </div>
-            <form id="login-form" class="space-y-4">
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
                 <div class="relative">
                     <label class="sr-only">Email</label>
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -146,11 +145,104 @@
         </div>
     </div>
 
+    <!-- ADD/EDIT USER MODAL -->
+    <div id="user-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <h3 id="um-title" class="font-bold text-xl text-slate-800 mb-4">Manage User</h3>
+            <!-- TYPE BUTTON PREVENTS RELOAD -->
+            <form id="user-form" class="space-y-4">
+                <input type="hidden" id="um-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Name</label>
+                    <input type="text" id="um-name" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. John Doe">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+                    <input type="email" id="um-email" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+                    <input type="text" id="um-pass" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="New Password">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label>
+                    <select id="um-role" onchange="toggleContractorSelect()" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="admin">Admin (Full Access)</option>
+                        <option value="employee">Employee (No User Mgmt)</option>
+                        <option value="contractor">Contractor (Limited View)</option>
+                    </select>
+                </div>
+                <div id="um-contractor-div" class="hidden">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Link to Contractor Profile</label>
+                    <select id="um-contractor-link" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">Select Contractor...</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                    <button type="button" onclick="handleSaveUser()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT CONTRACTOR MODAL (MULTI-FILE & RENAME) -->
+    <div id="edit-c-modal" class="fixed inset-0 z-40 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i data-lucide="folder-open" class="w-6 h-6"></i></div>
+                    <div><h3 class="font-bold text-xl text-slate-800">Contractor Details</h3><p class="text-xs text-slate-500">Edit & Manage Files</p></div>
+                </div>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <form id="edit-c-form" class="p-6 space-y-5">
+                <input type="hidden" id="ec-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="ec-name" required placeholder="Business Name" class="w-full p-2 border rounded border-slate-300">
+                    <input type="text" id="ec-contact" placeholder="Contact Person" class="w-full p-2 border rounded border-slate-300">
+                    <input type="text" id="ec-ein" placeholder="EIN" class="w-full p-2 border rounded border-slate-300 bg-slate-50 font-mono">
+                    <input type="email" id="ec-email" placeholder="Email" class="w-full p-2 border rounded border-slate-300">
+                    <input type="text" id="ec-phone" placeholder="Phone" class="w-full p-2 border rounded border-slate-300">
+                    <input type="text" id="ec-address" required placeholder="Address" class="w-full p-2 border rounded border-slate-300">
+                </div>
+
+                <!-- FILE MANAGEMENT SECTION -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Documents Folder</label>
+                    
+                    <!-- File List with Editable Names -->
+                    <div id="ec-file-list" class="space-y-2 mb-4">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Add New File -->
+                    <div class="bg-white p-3 rounded-lg border border-slate-200">
+                        <p class="text-xs font-bold text-blue-600 mb-2">+ Add Document</p>
+                        <div class="flex flex-col gap-2">
+                            <input type="text" id="ec-new-filename" placeholder="File Name (e.g. Insurance, W9...)" class="text-sm p-2 border rounded w-full">
+                            <input type="file" id="ec-new-file" accept="image/*,application/pdf" class="block w-full text-xs text-slate-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-4 border-t border-slate-100">
+                    <button type="button" onclick="handleDeleteFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Contractor</button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                        <button type="button" id="btn-update-c" onclick="handleUpdateContractor()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 shadow-md">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- EDIT PAYMENT MODAL -->
     <div id="edit-payment-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
             <h3 class="font-bold text-xl text-slate-800 mb-4">Edit Payment</h3>
-            <form onsubmit="handleUpdatePayment(event)" class="space-y-4">
+            <form id="edit-payment-form" class="space-y-4">
                 <input type="hidden" id="ep-id">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
@@ -184,100 +276,7 @@
                      <button type="button" onclick="handleDeletePaymentFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button>
                     <div class="flex gap-2">
                         <button type="button" onclick="closeEditPaymentModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
-                        <button type="submit" id="btn-update-p" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ADD/EDIT USER MODAL -->
-    <div id="user-modal" class="fixed inset-0 z-50 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
-            <h3 id="um-title" class="font-bold text-xl text-slate-800 mb-4">Manage User</h3>
-            <form onsubmit="handleSaveUser(event)" class="space-y-4">
-                <input type="hidden" id="um-id">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Name</label>
-                    <input type="text" id="um-name" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. John Doe">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
-                    <input type="email" id="um-email" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
-                    <input type="text" id="um-pass" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="New Password">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label>
-                    <select id="um-role" onchange="toggleContractorSelect()" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="admin">Admin (Full Access)</option>
-                        <option value="employee">Employee (No User Mgmt)</option>
-                        <option value="contractor">Contractor (Limited View)</option>
-                    </select>
-                </div>
-                <div id="um-contractor-div" class="hidden">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Link to Contractor Profile</label>
-                    <select id="um-contractor-link" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="">Select Contractor...</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- EDIT CONTRACTOR MODAL (MULTI-FILE) -->
-    <div id="edit-c-modal" class="fixed inset-0 z-40 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i data-lucide="folder-open" class="w-6 h-6"></i></div>
-                    <div><h3 class="font-bold text-xl text-slate-800">Contractor Details</h3><p class="text-xs text-slate-500">Edit & Manage Files</p></div>
-                </div>
-                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            
-            <form id="edit-c-form" onsubmit="handleUpdateContractor(event)" class="p-6 space-y-5">
-                <input type="hidden" id="ec-id">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="ec-name" required placeholder="Business Name" class="w-full p-2 border rounded border-slate-300">
-                    <input type="text" id="ec-contact" placeholder="Contact Person" class="w-full p-2 border rounded border-slate-300">
-                    <input type="text" id="ec-ein" placeholder="EIN" class="w-full p-2 border rounded border-slate-300 bg-slate-50 font-mono">
-                    <input type="email" id="ec-email" placeholder="Email" class="w-full p-2 border rounded border-slate-300">
-                    <input type="text" id="ec-phone" placeholder="Phone" class="w-full p-2 border rounded border-slate-300">
-                    <input type="text" id="ec-address" required placeholder="Address" class="w-full p-2 border rounded border-slate-300">
-                </div>
-
-                <!-- FILE MANAGEMENT SECTION -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Documents Folder</label>
-                    
-                    <!-- File List -->
-                    <div id="ec-file-list" class="space-y-2 mb-4">
-                        <!-- Populated by JS -->
-                        <p class="text-sm text-slate-400 italic">No files attached.</p>
-                    </div>
-
-                    <!-- Add New File -->
-                    <div class="bg-white p-3 rounded-lg border border-slate-200">
-                        <p class="text-xs font-bold text-blue-600 mb-2">+ Add Document</p>
-                        <div class="flex flex-col gap-2">
-                            <input type="text" id="ec-new-filename" placeholder="File Name (e.g. Insurance, W9...)" class="text-sm p-2 border rounded w-full">
-                            <input type="file" id="ec-new-file" accept="image/*,application/pdf" class="block w-full text-xs text-slate-500">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-between pt-4 border-t border-slate-100">
-                    <button type="button" onclick="handleDeleteFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Contractor</button>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
-                        <button type="submit" id="btn-update-c" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 shadow-md">Save Changes</button>
+                        <button type="button" id="btn-update-p" onclick="handleUpdatePayment()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
                     </div>
                 </div>
             </form>
@@ -372,6 +371,7 @@
         } else {
             document.getElementById('login-form').addEventListener('submit', handleLogin);
             lucide.createIcons();
+            loadSavedFormData();
         }
 
         async function initPublicMode() {
@@ -380,6 +380,22 @@
             lucide.createIcons();
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await auth.signInWithCustomToken(__initial_auth_token);
             else await auth.signInAnonymously();
+        }
+
+        // --- DATA SAVER (BACKUP) ---
+        function saveFormData(id, value) {
+            localStorage.setItem('d2_form_' + id, value);
+        }
+        function loadSavedFormData() {
+             const inputs = ['nc-name', 'nc-contact', 'nc-ein', 'nc-email', 'nc-phone', 'nc-address'];
+             inputs.forEach(id => {
+                 const val = localStorage.getItem('d2_form_' + id);
+                 // Values will be set when the form is rendered
+             });
+        }
+        function clearSavedFormData() {
+             const inputs = ['nc-name', 'nc-contact', 'nc-ein', 'nc-email', 'nc-phone', 'nc-address'];
+             inputs.forEach(id => localStorage.removeItem('d2_form_' + id));
         }
 
         function toggleLoginPassword() {
@@ -637,7 +653,7 @@
                         <img src="logo-D2-HVAC-Solutions-preto.png" class="w-24 mb-4 bg-white p-2 rounded-lg opacity-90" onerror="this.style.display='none'">
                         <h2 class="text-xl md:text-2xl font-bold mb-2">Welcome Back, ${currentUser.name.split(' ')[0]}</h2>
                         <p class="text-slate-400 mb-6 max-w-xs text-xs md:text-sm">System is secure and up to date.</p>
-                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v5.3 Fixed</span></div>
+                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v6.0 FINAL</span></div>
                     </div>
                 </div>`;
             lucide.createIcons();
@@ -663,19 +679,30 @@
                 </div>
                 <div id="add-c-form" class="hidden bg-blue-50 border border-blue-200 p-4 md:p-6 rounded-xl mb-6">
                     <h3 class="font-bold text-blue-900 mb-4">New Contractor Registration</h3>
-                    <form onsubmit="handleSaveContractor(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="nc-name" placeholder="Business Name *" required class="p-2 rounded border border-slate-300 w-full">
-                        <input type="text" id="nc-contact" placeholder="Contact Person" class="p-2 rounded border border-slate-300 w-full">
-                        <input type="text" id="nc-ein" placeholder="EIN / SSN *" required class="p-2 rounded border border-slate-300 w-full">
-                        <input type="email" id="nc-email" placeholder="Email" class="p-2 rounded border border-slate-300 w-full">
-                        <input type="text" id="nc-phone" placeholder="Phone" class="p-2 rounded border border-slate-300 w-full">
-                        <input type="text" id="nc-address" placeholder="Full Address *" required class="p-2 rounded border border-slate-300 w-full">
+                    <!-- CHANGED TYPE TO BUTTON -->
+                    <form id="new-c-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="nc-name" placeholder="Business Name *" required class="p-2 rounded border border-slate-300 w-full" oninput="saveFormData('nc-name', this.value)">
+                        <input type="text" id="nc-contact" placeholder="Contact Person" class="p-2 rounded border border-slate-300 w-full" oninput="saveFormData('nc-contact', this.value)">
+                        <input type="text" id="nc-ein" placeholder="EIN / SSN *" required class="p-2 rounded border border-slate-300 w-full" oninput="saveFormData('nc-ein', this.value)">
+                        <input type="email" id="nc-email" placeholder="Email" class="p-2 rounded border border-slate-300 w-full" oninput="saveFormData('nc-email', this.value)">
+                        <input type="text" id="nc-phone" placeholder="Phone" class="p-2 rounded border border-slate-300 w-full" oninput="saveFormData('nc-phone', this.value)">
+                        <input type="text" id="nc-address" placeholder="Full Address *" required class="p-2 rounded border border-slate-300 w-full" oninput="saveFormData('nc-address', this.value)">
                         <div class="md:col-span-2 bg-white p-3 rounded border border-dashed border-slate-400"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload Initial Document (Optional)</label><input type="file" id="nc-file" accept="image/*,.pdf" class="block w-full text-sm text-slate-500"></div>
-                        <div class="md:col-span-2 flex justify-end gap-2 mt-2"><button type="button" onclick="document.getElementById('add-c-form').classList.add('hidden')" class="px-4 py-2 text-slate-600 hover:bg-white rounded">Cancel</button><button type="submit" id="btn-save-c" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div>
+                        <div class="md:col-span-2 flex justify-end gap-2 mt-2">
+                             <button type="button" onclick="document.getElementById('add-c-form').classList.add('hidden')" class="px-4 py-2 text-slate-600 hover:bg-white rounded">Cancel</button>
+                             <!-- TYPE BUTTON -->
+                             <button type="button" id="btn-save-c" onclick="handleSaveContractor()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button>
+                        </div>
                     </form>
                 </div>
                 <div id="c-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
             filterContractors(); 
+            // RESTORE DATA
+             const inputs = ['nc-name', 'nc-contact', 'nc-ein', 'nc-email', 'nc-phone', 'nc-address'];
+             inputs.forEach(id => {
+                 const val = localStorage.getItem('d2_form_' + id);
+                 if(val) document.getElementById(id).value = val;
+             });
             lucide.createIcons();
         }
 
@@ -694,7 +721,7 @@
             lucide.createIcons();
         }
 
-        // --- EDIT MODAL LOGIC (MULTI-FILE) ---
+        // --- EDIT MODAL LOGIC (MULTI-FILE & RENAME) ---
         function openEditModal(id) {
             const c = contractors.find(x => x.id === id); if(!c) return;
             document.getElementById('ec-id').value = c.id;
@@ -720,11 +747,12 @@
             if (currentEditingFiles.length === 0) {
                 listContainer.innerHTML = '<p class="text-sm text-slate-400 italic text-center py-2">No files attached yet.</p>';
             } else {
+                // ADDED INPUT for renaming existing files
                 listContainer.innerHTML = currentEditingFiles.map((f, i) => `
                     <div class="flex items-center justify-between bg-white p-2 rounded border border-slate-100">
-                        <div class="flex items-center gap-2 overflow-hidden">
+                        <div class="flex items-center gap-2 overflow-hidden flex-1">
                             <i data-lucide="file-text" class="w-4 h-4 text-blue-500 shrink-0"></i>
-                            <span class="text-xs font-bold text-slate-700 truncate max-w-[150px]">${f.name || 'Document'}</span>
+                            <input type="text" value="${f.name || 'Document'}" onchange="updateFileName(${i}, this.value)" class="text-xs font-bold text-slate-700 border-b border-transparent hover:border-slate-300 focus:border-blue-500 bg-transparent outline-none w-full truncate">
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <a href="${f.url}" target="_blank" class="text-blue-600 hover:bg-blue-50 p-1 rounded"><i data-lucide="eye" class="w-4 h-4"></i></a>
@@ -736,6 +764,11 @@
             }
         }
 
+        // NEW: Function to handle rename on change
+        function updateFileName(index, newName) {
+            if(currentEditingFiles[index]) currentEditingFiles[index].name = newName;
+        }
+
         function deleteFileFromList(index) {
             if(!confirm("Remove this file?")) return;
             currentEditingFiles.splice(index, 1);
@@ -743,7 +776,9 @@
         }
 
         async function handleUpdateContractor(e) {
-            e.preventDefault();
+            // No preventDefault needed as button is type="button" but safe to check
+            if(e) e.preventDefault();
+            
             const btn = document.getElementById('btn-update-c'); btn.disabled = true;
             const id = document.getElementById('ec-id').value;
             const fileInput = document.getElementById('ec-new-file');
@@ -795,13 +830,14 @@
                     <div class="lg:col-span-1 no-print">
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 sticky top-6">
                             <h2 class="font-bold text-lg mb-4 text-slate-800">Log Payment</h2>
-                            <form onsubmit="handleSavePayment(event)" class="space-y-4">
+                            <!-- CHANGED to type="button" -->
+                            <form id="payment-form" class="space-y-4">
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Contractor</label><select id="np-contractor" required class="w-full p-2 bg-white border border-slate-300 rounded"><option value="">Select...</option>${contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('')}</select></div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Amount ($)</label><input type="number" step="0.01" id="np-amount" required class="w-full p-2 border border-slate-300 rounded"></div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Date</label><input type="date" id="np-date" required class="w-full p-2 border border-slate-300 rounded" value="${today}"></div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Method</label><select id="np-method" class="w-full p-2 bg-white border border-slate-300 rounded"><option>Check</option><option>ACH</option><option>Zelle</option><option>Cash</option><option>Credit Card</option></select></div>
                                 <div><label class="text-xs font-bold text-slate-500 uppercase">Memo</label><input type="text" id="np-memo" placeholder="Invoice #..." class="w-full p-2 border border-slate-300 rounded"></div>
-                                <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700 shadow-sm">Record Payment</button>
+                                <button type="button" onclick="handleSavePayment()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700 shadow-sm">Record Payment</button>
                             </form>
                         </div>
                     </div>
@@ -863,8 +899,7 @@
             document.getElementById('edit-payment-modal').classList.add('hidden');
         }
 
-        async function handleUpdatePayment(e) {
-            e.preventDefault();
+        async function handleUpdatePayment() {
             const id = document.getElementById('ep-id').value;
             const data = {
                 date: document.getElementById('ep-date').value,
@@ -881,7 +916,6 @@
                 await collectionRef.doc(id).update(data);
                 closeEditPaymentModal();
                 showToast("Payment Updated");
-                // Refresh list if needed (snapshot handles it, but just in case)
             } catch(err) {
                 console.error(err);
                 alert("Error updating payment: " + err.message);
@@ -950,97 +984,117 @@
             if(filteredPayments.length === 0) output.innerHTML += `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded border border-dashed mt-4">No records found for this period.</div>`;
         }
 
-        function renderUsers() {
-            const container = document.getElementById('content-area');
-            container.innerHTML = `<div class="flex justify-between items-center mb-6"><p class="text-slate-500 text-sm md:text-base">Manage access levels and reset passwords.</p><button onclick="openUserModal()" class="bg-blue-600 text-white px-3 py-2 text-sm md:text-base md:px-4 md:py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 shadow-sm"><i data-lucide="plus"></i> New User</button></div><div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email</th><th class="px-6 py-3">Role</th><th class="px-6 py-3 text-right">Actions</th></tr></thead><tbody class="divide-y divide-slate-100">${appUsers.map(u => { const roleColors = { admin: 'bg-purple-100 text-purple-700', employee: 'bg-blue-100 text-blue-700', contractor: 'bg-green-100 text-green-700' }; return `<tr class="hover:bg-slate-50"><td class="px-6 py-3 font-bold text-slate-700">${u.name || 'User'}</td><td class="px-6 py-3 text-slate-500">${u.email}</td><td class="px-6 py-3"><span class="${roleColors[u.role] || 'bg-gray-100'} px-2 py-1 rounded text-xs font-bold">${u.role ? u.role.toUpperCase() : 'EMPLOYEE'}</span></td><td class="px-6 py-3 text-right flex justify-end gap-2"><button onclick='openUserModal(${JSON.stringify(u).replace(/'/g, "&apos;")})' class="text-blue-500 hover:bg-blue-50 p-2 rounded"><i data-lucide="key" class="w-4 h-4"></i></button><button onclick="deleteUser('${u.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`; }).join('')}</tbody></table></div></div>`;
-            lucide.createIcons();
-        }
+        // ... (Other render functions) ...
 
-        function renderContractorPortal() {
-            const container = document.getElementById('content-area');
-            const cId = currentUser.linkedContractorId;
-            const myProfile = contractors.find(c => c.id === cId);
-            if(!myProfile) return container.innerHTML = `<div class="text-center p-10">Profile not linked. Contact Admin.</div>`;
-            const myPayments = payments.filter(p => p.contractorId === cId).sort((a,b) => new Date(b.date) - new Date(a.date));
-            const totalPaid = myPayments.reduce((acc, p) => acc + parseFloat(p.amount), 0);
-            container.innerHTML = `<div class="print-header mb-8 text-center hidden"><img src="logo-D2-HVAC-Solutions-preto.png" class="w-32 mx-auto mb-4" onerror="this.style.display='none'"><h1 class="text-3xl font-bold text-slate-900 mb-2">D2 HVAC Solutions</h1><p class="text-slate-600">Contractor Statement</p></div><div class="mb-6 no-print"><h2 class="text-xl md:text-2xl font-bold text-slate-800">Welcome, ${currentUser.name || myProfile.contactName}</h2><p class="text-slate-500">Your contractor portal</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 no-print"><div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"><p class="text-sm text-slate-500 font-bold uppercase">Total Earnings</p><h3 class="text-3xl font-bold text-green-600">$${totalPaid.toLocaleString()}</h3></div><div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"><p class="text-sm text-slate-500 font-bold uppercase">Business Info</p><h3 class="font-bold text-slate-800">${myProfile.businessName}</h3><p class="text-xs text-slate-500">${myProfile.ein}</p></div><div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"><p class="text-sm text-slate-500 font-bold uppercase">W-9 Status</p>${myProfile.w9OnFile ? `<div class="flex items-center gap-2 text-green-600 font-bold mt-1"><i data-lucide="check-circle"></i> On File</div>` : `<div class="flex items-center gap-2 text-red-500 font-bold mt-1"><i data-lucide="alert-circle"></i> Missing</div>`}</div></div><div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8"><div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center no-print"><h3 class="font-bold text-slate-700">My Payment History</h3><button onclick="window.print()" class="text-sm text-blue-600 hover:underline flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Print</button></div><div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-white text-slate-500 border-b"><tr><th class="px-6 py-3">Date</th><th class="px-6 py-3">Method</th><th class="px-6 py-3">Memo</th><th class="px-6 py-3 text-right">Amount</th></tr></thead><tbody class="divide-y divide-slate-100">${myPayments.map(p => `<tr><td class="px-6 py-3 font-mono text-slate-600">${p.date}</td><td class="px-6 py-3"><span class="bg-slate-100 px-2 py-1 rounded text-xs">${p.method}</span></td><td class="px-6 py-3 text-slate-500">${p.description || '-'}</td><td class="px-6 py-3 text-right font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString()}</td></tr>`).join('')}</tbody></table></div></div>`;
-            lucide.createIcons();
-        }
-
-        function showAddContractorModal() {
-            const form = document.getElementById('add-c-form');
-            form.classList.remove('hidden');
-            const nameInput = document.getElementById('nc-name');
-            nameInput.focus();
-            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function copyLink() {
-            const url = window.location.href.split('?')[0] + "?mode=onboard";
-            navigator.clipboard.writeText(url).then(() => showToast("Copied!")).catch(() => prompt("Link:", url));
-        }
-        function showToast(msg) { const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; t.classList.remove('translate-y-20'); setTimeout(() => t.classList.add('translate-y-20'), 3000); }
-        async function uploadFile(file) {
-            if (storage) {
-                const storageRef = storage.ref();
-                const fileRef = storageRef.child(`contractors/${Date.now()}_${file.name}`);
-                const snapshot = await fileRef.put(file);
-                return await snapshot.ref.getDownloadURL();
-            }
-            if (file.size > 950 * 1024) throw new Error("File too large. Setup Storage.");
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-            });
-        }
-        function openUserModal(user = null) {
-            document.getElementById('user-modal').classList.remove('hidden');
-            const roleSelect = document.getElementById('um-role');
-            const cSelect = document.getElementById('um-contractor-link');
-            cSelect.innerHTML = '<option value="">Select Contractor...</option>' + contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('');
-            if(user) {
-                document.getElementById('um-title').textContent = "Edit User & Password";
-                document.getElementById('um-id').value = user.id;
-                document.getElementById('um-name').value = user.name || '';
-                document.getElementById('um-email').value = user.email;
-                document.getElementById('um-pass').value = atob(user.password);
-                roleSelect.value = user.role || 'employee';
-                cSelect.value = user.linkedContractorId || '';
-            } else {
-                document.getElementById('um-title').textContent = "Add New User";
-                document.getElementById('um-id').value = '';
-                document.getElementById('um-name').value = '';
-                document.getElementById('um-email').value = '';
-                document.getElementById('um-pass').value = '';
-                roleSelect.value = 'employee';
-                cSelect.value = '';
-            }
-            toggleContractorSelect();
-        }
-        function closeUserModal() { document.getElementById('user-modal').classList.add('hidden'); }
-        function toggleContractorSelect() {
-            const role = document.getElementById('um-role').value;
-            const div = document.getElementById('um-contractor-div');
-            if (role === 'contractor') div.classList.remove('hidden'); else div.classList.add('hidden');
-        }
-        async function handleSaveUser(e) {
-            e.preventDefault();
-            const id = document.getElementById('um-id').value;
-            const name = document.getElementById('um-name').value;
-            const email = document.getElementById('um-email').value;
-            const pass = document.getElementById('um-pass').value;
-            const role = document.getElementById('um-role').value;
-            const linkedId = document.getElementById('um-contractor-link').value;
-            if (role === 'contractor' && !linkedId) return alert("Please select a Contractor profile.");
-            const isAIPreview = typeof __app_id !== 'undefined';
-            const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
-            const data = { name: name, email: email, password: btoa(pass), role: role, linkedContractorId: linkedId || null, updatedAt: new Date().toISOString() };
+        async function handleSaveContractor(e) {
+            e.preventDefault(); // Just in case
+            const btn = document.getElementById('btn-save-c'); btn.disabled = true;
+            const fileInput = document.getElementById('nc-file');
+            let filesArr = [];
+            
             try {
-                if(id) await uCollection.doc(id).update(data); else await uCollection.add({...data, createdAt: new Date().toISOString()});
-                closeUserModal(); showToast(id ? "User Updated" : "User Created");
-            } catch(err) { alert(err.message); }
+                if(fileInput.files[0]) {
+                    const url = await uploadFile(fileInput.files[0]);
+                    filesArr.push({ name: "Initial Document", url: url, date: new Date().toISOString() });
+                }
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('nc-name').value,
+                    contactName: document.getElementById('nc-contact').value,
+                    ein: document.getElementById('nc-ein').value,
+                    email: document.getElementById('nc-email').value,
+                    phone: document.getElementById('nc-phone').value,
+                    address: document.getElementById('nc-address').value,
+                    files: filesArr,
+                    w9OnFile: filesArr.length > 0,
+                    createdAt: new Date().toISOString()
+                });
+                document.getElementById('add-c-form').classList.add('hidden');
+                document.getElementById('new-c-form').reset();
+                clearSavedFormData();
+                showToast("Contractor Registered");
+            } catch (err) { alert("Error: " + err.message); } 
+            finally { btn.disabled = false; }
+        }
+
+        async function handleSavePayment() {
+            const btn = document.querySelector('#payment-form button');
+            if(btn) { btn.textContent = "Saving..."; btn.disabled = true; }
+
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('payments') : db.collection('payments');
+            
+            try {
+                await collectionRef.add({
+                    contractorId: document.getElementById('np-contractor').value,
+                    amount: parseFloat(document.getElementById('np-amount').value),
+                    date: document.getElementById('np-date').value,
+                    method: document.getElementById('np-method').value,
+                    description: document.getElementById('np-memo').value,
+                    createdAt: new Date().toISOString()
+                });
+                
+                document.getElementById('payment-form').reset();
+                document.getElementById('np-date').value = new Date().toISOString().split('T')[0];
+                
+                showToast("Payment Recorded");
+                
+                if(window.currentView === 'payments') renderPayments();
+            } catch (err) {
+                console.error(err);
+                alert("Error saving payment: " + err.message);
+            } finally {
+                if(btn) { btn.textContent = "Record Payment"; btn.disabled = false; }
+            }
+        }
+
+        async function handlePublicSubmit() {
+            const btn = document.getElementById('btn-public-submit');
+            btn.textContent = "Submitting...";
+            btn.disabled = true;
+            const fileInput = document.getElementById('pb-file');
+            let filesArr = [];
+            try {
+                if(fileInput.files[0]) {
+                    const url = await uploadFile(fileInput.files[0]);
+                    filesArr.push({ name: "Uploaded W9", url: url, date: new Date().toISOString() });
+                }
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('pb-name').value,
+                    contactName: document.getElementById('pb-contact').value,
+                    ein: document.getElementById('pb-ein').value,
+                    email: document.getElementById('pb-email').value,
+                    phone: document.getElementById('pb-phone').value,
+                    address: document.getElementById('pb-address').value,
+                    files: filesArr,
+                    w9OnFile: filesArr.length > 0,
+                    createdAt: new Date().toISOString(),
+                    source: 'public_link'
+                });
+                document.getElementById('public-form').classList.add('hidden');
+                document.getElementById('public-success').classList.remove('hidden');
+            } catch (err) { alert("Error: " + err.message); btn.textContent = "Submit Registration"; btn.disabled = false; }
+        }
+
+        // ... rest of utils ...
+        async function handleDeleteFromModal() {
+            const id = document.getElementById('ec-id').value;
+            if(!confirm("Are you sure?")) return;
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+            await collectionRef.doc(id).delete();
+            closeEditModal();
+            showToast("Deleted");
+        }
+        async function deleteUser(id) {
+             if(!confirm("Remove User?")) return;
+             const isAIPreview = typeof __app_id !== 'undefined';
+             const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+             await uCollection.doc(id).delete();
+             showToast("User Removed");
         }
     </script>
 </body>

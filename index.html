@@ -203,16 +203,22 @@
                     <input type="text" id="ec-ein" placeholder="EIN" class="w-full p-2 border rounded border-slate-300 bg-slate-50 font-mono">
                     <input type="email" id="ec-email" placeholder="Email" class="w-full p-2 border rounded border-slate-300">
                     <input type="text" id="ec-phone" placeholder="Phone" class="w-full p-2 border rounded border-slate-300">
-                    <input type="text" id="ec-address" placeholder="Address" class="w-full p-2 border rounded border-slate-300">
+                    <input type="text" id="ec-address" required placeholder="Address" class="w-full p-2 border rounded border-slate-300">
                 </div>
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-3">W-9 Management</label>
                     <div id="ec-current-w9" class="flex items-center gap-4 mb-4 bg-white p-3 rounded-lg border border-slate-200 hidden">
                         <i data-lucide="file-text" class="text-red-500"></i>
-                        <span class="text-sm font-bold flex-1">File On Record</span>
-                        <a id="ec-download-link" target="_blank" class="text-blue-600 text-xs font-bold hover:underline">Download</a>
+                        <div class="flex-1">
+                            <span class="text-sm font-bold block">File On Record</span>
+                            <input type="text" id="ec-filename" class="text-xs text-slate-500 bg-transparent border-b border-slate-300 w-full focus:outline-none focus:border-blue-500" placeholder="Rename file...">
+                        </div>
+                        <a id="ec-download-link" target="_blank" class="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1">
+                            <i data-lucide="eye" class="w-4 h-4"></i> View
+                        </a>
                     </div>
                     <div id="ec-no-w9" class="text-sm text-slate-500 mb-4 hidden px-2">No W-9 on file.</div>
+                    <label class="block text-xs text-slate-400 mb-1">Replace/Upload File:</label>
                     <input type="file" id="ec-new-file" accept="image/*,application/pdf" class="block w-full text-xs text-slate-500">
                 </div>
                 <div class="flex justify-between pt-4 border-t border-slate-100">
@@ -557,18 +563,41 @@
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-lg mb-4 text-slate-800">Recent Transactions</h3>
                         <div class="space-y-3">
-                            ${recentP.length ? recentP.map(p => { const c = contractors.find(cx => cx.id === p.contractorId) || {businessName: 'Unknown'}; return `<div class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-all"><div class="flex items-center gap-3"><div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-200">${c.businessName.substring(0,2).toUpperCase()}</div><div><p class="font-bold text-slate-800 text-xs md:text-sm">${c.businessName}</p><p class="text-[10px] md:text-xs text-slate-500">${p.date}</p></div></div><span class="font-bold text-slate-700 text-sm md:text-base">$${parseFloat(p.amount).toLocaleString()}</span></div>`; }).join('') : '<p class="text-slate-400 text-center py-4">No payments yet.</p>'}
+                            ${recentP.length ? recentP.map(p => { 
+                                const c = contractors.find(cx => cx.id === p.contractorId) || {businessName: 'Unknown'}; 
+                                return `
+                                <div onclick="goToPaymentLedger('${p.contractorId}')" class="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-all cursor-pointer">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-200">${c.businessName.substring(0,2).toUpperCase()}</div>
+                                        <div><p class="font-bold text-slate-800 text-xs md:text-sm">${c.businessName}</p><p class="text-[10px] md:text-xs text-slate-500">${p.date}</p></div>
+                                    </div>
+                                    <span class="font-bold text-slate-700 text-sm md:text-base">$${parseFloat(p.amount).toLocaleString()}</span>
+                                </div>`; 
+                            }).join('') : '<p class="text-slate-400 text-center py-4">No payments yet.</p>'}
                         </div>
                     </div>
                     <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 text-white flex flex-col justify-center items-center text-center shadow-xl">
                         <img src="logo-D2-HVAC-Solutions-preto.png" class="w-24 mb-4 bg-white p-2 rounded-lg opacity-90" onerror="this.style.display='none'">
                         <h2 class="text-xl md:text-2xl font-bold mb-2">Welcome Back, ${currentUser.name.split(' ')[0]}</h2>
                         <p class="text-slate-400 mb-6 max-w-xs text-xs md:text-sm">System is secure and up to date.</p>
-                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v4.3 Stable</span></div>
+                        <div class="flex gap-2 text-[10px] md:text-xs"><span class="bg-slate-700 px-3 py-1 rounded-full">Secure Mode</span><span class="bg-blue-900 text-blue-200 px-3 py-1 rounded-full">v4.3 Fixes</span></div>
                     </div>
                 </div>`;
             lucide.createIcons();
         }
+
+        // Helper to link dashboard transaction to ledger
+        window.goToPaymentLedger = (contractorId) => {
+            router('payments');
+            // Allow time for DOM to render then filter
+            setTimeout(() => {
+                const select = document.getElementById('l-contractor');
+                if(select) {
+                    select.value = contractorId;
+                    filterLedger();
+                }
+            }, 100);
+        };
 
         function renderContractors() {
              const container = document.getElementById('content-area');
@@ -735,6 +764,7 @@
             document.getElementById('ec-email').value = c.email || '';
             document.getElementById('ec-phone').value = c.phone || '';
             document.getElementById('ec-address').value = c.address || '';
+            document.getElementById('ec-filename').value = c.w9FileName || (c.w9File ? 'Document' : '');
             document.getElementById('ec-new-file').value = '';
             
             if(c.w9OnFile && c.w9File) {
@@ -755,6 +785,8 @@
             const btn = document.getElementById('btn-update-c'); btn.disabled = true;
             const id = document.getElementById('ec-id').value;
             const fileInput = document.getElementById('ec-new-file');
+            const fileNameInput = document.getElementById('ec-filename').value;
+            
             try {
                 const isAIPreview = typeof __app_id !== 'undefined';
                 const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
@@ -765,10 +797,13 @@
                     email: document.getElementById('ec-email').value,
                     phone: document.getElementById('ec-phone').value,
                     address: document.getElementById('ec-address').value,
+                    w9FileName: fileNameInput
                 };
                 if(fileInput.files[0]) {
                     updateData.w9File = await uploadFile(fileInput.files[0]);
                     updateData.w9OnFile = true;
+                    // If user didn't type a custom name, use file name
+                    if(!fileNameInput) updateData.w9FileName = fileInput.files[0].name;
                 }
                 await collectionRef.doc(id).update(updateData);
                 closeEditModal(); showToast("Updated");
@@ -799,8 +834,13 @@
             const btn = document.getElementById('btn-save-c'); btn.disabled = true;
             const fileInput = document.getElementById('nc-file');
             let fileData = null;
+            let fileName = '';
+            
             try {
-                if(fileInput.files[0]) fileData = await uploadFile(fileInput.files[0]);
+                if(fileInput.files[0]) {
+                    fileData = await uploadFile(fileInput.files[0]);
+                    fileName = fileInput.files[0].name;
+                }
                 const isAIPreview = typeof __app_id !== 'undefined';
                 const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
                 await collectionRef.add({
@@ -812,6 +852,7 @@
                     address: document.getElementById('nc-address').value,
                     w9OnFile: !!fileData,
                     w9File: fileData,
+                    w9FileName: fileName,
                     createdAt: new Date().toISOString()
                 });
                 document.getElementById('add-c-form').classList.add('hidden');
@@ -828,8 +869,12 @@
             btn.disabled = true;
             const fileInput = document.getElementById('pb-file');
             let fileData = null;
+            let fileName = '';
             try {
-                if(fileInput.files[0]) fileData = await uploadFile(fileInput.files[0]);
+                if(fileInput.files[0]) {
+                    fileData = await uploadFile(fileInput.files[0]);
+                    fileName = fileInput.files[0].name;
+                }
                 const isAIPreview = typeof __app_id !== 'undefined';
                 const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
                 await collectionRef.add({
@@ -841,6 +886,7 @@
                     address: document.getElementById('pb-address').value,
                     w9OnFile: !!fileData,
                     w9File: fileData,
+                    w9FileName: fileName,
                     createdAt: new Date().toISOString(),
                     source: 'public_link'
                 });
@@ -919,6 +965,7 @@
             }
             toggleContractorSelect();
         }
+        function closeUserModal() { document.getElementById('user-modal').classList.add('hidden'); }
         function toggleContractorSelect() {
             const role = document.getElementById('um-role').value;
             const div = document.getElementById('um-contractor-div');

@@ -22,6 +22,7 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .drag-active { border-color: #2563eb !important; background-color: #eff6ff !important; }
 
         @media print {
             @page { margin: 1.5cm; size: auto; }
@@ -73,12 +74,14 @@
                     <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
                         <label class="block text-sm font-bold text-blue-900 mb-3">Upload Document (PDF or Photo)</label>
                         <input type="file" id="pb-file" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-white rounded-lg border border-blue-100">
+                        <p class="text-xs text-blue-400 mt-2">You can upload a PDF document or a photo.</p>
                     </div>
                     <button type="button" id="btn-public-submit" onclick="handlePublicSubmit()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-black shadow-lg">Submit Registration</button>
                 </form>
                 <div id="public-success" class="hidden text-center py-12">
                     <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
                     <h2 class="text-2xl font-bold text-slate-800 mb-2">Registration Successful!</h2>
+                    <p class="text-slate-500">Thank you. Your information has been securely received by D2 HVAC Solutions.</p>
                 </div>
             </div>
         </div>
@@ -93,17 +96,11 @@
                 <p class="text-slate-500 text-sm mt-1">Payment & Compliance Control</p>
             </div>
             <form id="login-form" class="space-y-4" onsubmit="event.preventDefault(); return false;">
-                <div class="relative">
-                    <input type="email" id="email" autocapitalize="none" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Email" required>
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i data-lucide="mail" class="w-5 h-5"></i></div>
-                </div>
+                <div class="relative"><input type="email" id="email" autocapitalize="none" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Email" required><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i data-lucide="mail" class="w-5 h-5"></i></div></div>
                 <div class="relative">
                     <input type="password" id="password" autocapitalize="none" class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Password" required>
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i data-lucide="lock" class="w-5 h-5"></i></div>
-                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors z-10 cursor-pointer" style="min-width: 40px; justify-content: center;">
-                        <i id="icon-show" data-lucide="eye" class="w-5 h-5"></i>
-                        <i id="icon-hide" data-lucide="eye-off" class="w-5 h-5 hidden"></i>
-                    </button>
+                    <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors z-10 cursor-pointer" style="min-width: 40px; justify-content: center;"><i id="icon-show" data-lucide="eye" class="w-5 h-5"></i><i id="icon-hide" data-lucide="eye-off" class="w-5 h-5 hidden"></i></button>
                 </div>
                 <div id="login-error" class="text-red-500 text-sm text-center hidden bg-red-50 p-2 rounded">Invalid credentials.</div>
                 <button type="button" id="btn-login" onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-lg active:scale-95">Sign In</button>
@@ -119,23 +116,22 @@
             <form id="user-form" class="space-y-4" onsubmit="event.preventDefault(); return false;">
                 <input type="hidden" id="um-id">
                 <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Name</label><input type="text" id="um-name" required class="w-full p-2 border border-slate-300 rounded" placeholder="e.g. John Doe"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label><input type="email" id="um-email" required class="w-full p-2 border border-slate-300 rounded"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" id="um-pass" required class="w-full p-2 border border-slate-300 rounded" placeholder="New Password"></div>
-                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label><select id="um-role" onchange="toggleContractorSelect()" class="w-full p-2 bg-white border border-slate-300 rounded"><option value="admin">Admin</option><option value="employee">Employee</option><option value="contractor">Contractor</option></select></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label><input type="email" id="um-email" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" id="um-pass" required class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="New Password"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label><select id="um-role" onchange="toggleContractorSelect()" class="w-full p-2 bg-white border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"><option value="admin">Admin</option><option value="employee">Employee</option><option value="contractor">Contractor</option></select></div>
                 <div id="um-contractor-div" class="hidden"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Link to Contractor Profile</label><select id="um-contractor-link" class="w-full p-2 bg-white border border-slate-300 rounded"><option value="">Select Contractor...</option></select></div>
                 <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button><button type="button" onclick="handleSaveUser()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div>
             </form>
         </div>
     </div>
 
-    <!-- EDIT CONTRACTOR MODAL (MULTI-FILE & RENAME) -->
+    <!-- EDIT CONTRACTOR MODAL (MULTI-FILE & RENAME & DRAG DROP) -->
     <div id="edit-c-modal" class="fixed inset-0 z-40 bg-slate-900/50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
                 <div class="flex items-center gap-3"><div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i data-lucide="folder-open" class="w-6 h-6"></i></div><div><h3 class="font-bold text-xl text-slate-800">Contractor Details</h3><p class="text-xs text-slate-500">Edit & Manage Files</p></div></div>
                 <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
             <form id="edit-c-form" class="p-6 space-y-5" onsubmit="event.preventDefault(); return false;">
                 <input type="hidden" id="ec-id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -146,26 +142,24 @@
                     <input type="text" id="ec-phone" placeholder="Phone" class="w-full p-2 border rounded border-slate-300">
                     <input type="text" id="ec-address" required placeholder="Address" class="w-full p-2 border rounded border-slate-300">
                 </div>
-
                 <!-- FILE MANAGEMENT SECTION -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Documents Folder</label>
                     <div id="ec-file-list" class="space-y-2 mb-4"></div>
-                    <div class="bg-white p-3 rounded-lg border border-slate-200">
-                        <p class="text-xs font-bold text-blue-600 mb-2">+ Add Document</p>
-                        <div class="flex flex-col gap-2">
-                            <input type="text" id="ec-new-filename" placeholder="File Name (e.g. Insurance, W9...)" class="text-sm p-2 border rounded w-full">
-                            <input type="file" id="ec-new-file" accept="image/*,application/pdf" class="block w-full text-xs text-slate-500">
+                    <div id="ec-drop-zone" class="bg-white p-4 rounded-lg border-2 border-dashed border-slate-300 transition-colors flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 relative group">
+                        <i data-lucide="upload" class="w-6 h-6 text-slate-400 mb-2 group-hover:text-blue-500"></i>
+                        <p class="text-xs font-bold text-blue-600 mb-1">+ Add Document</p>
+                        <p class="text-[10px] text-slate-400 mb-2">Drag & Drop or Click</p>
+                        <div class="flex flex-col gap-2 w-full max-w-xs z-10">
+                            <input type="text" id="ec-new-filename" placeholder="File Name (e.g. Insurance)" class="text-sm p-1.5 border rounded w-full">
                         </div>
+                        <input type="file" id="ec-new-file" accept="image/*,application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <p id="ec-file-name-display" class="text-xs font-mono text-slate-600 mt-2 hidden bg-white px-2 py-1 rounded border border-blue-200 z-20 relative"></p>
                     </div>
                 </div>
-
                 <div class="flex justify-between pt-4 border-t border-slate-100">
                     <button type="button" onclick="handleDeleteFromModal()" class="text-red-500 text-sm font-bold flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Contractor</button>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
-                        <button type="button" id="btn-update-c" onclick="handleUpdateContractor()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 shadow-md">Save Changes</button>
-                    </div>
+                    <div class="flex gap-2"><button type="button" onclick="closeEditModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded">Cancel</button><button type="button" id="btn-update-c" onclick="handleUpdateContractor()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 shadow-md">Save Changes</button></div>
                 </div>
             </form>
         </div>
@@ -244,24 +238,52 @@
         const urlParams = new URLSearchParams(window.location.search);
         
         window.onload = function() {
+            lucide.createIcons();
             if (urlParams.get('mode') === 'onboard') {
                 isPublicMode = true;
                 initPublicMode();
             } else {
+                setupDragAndDrop('pb-drop-zone', 'pb-file', 'pb-file-name');
+                setupDragAndDrop('nc-drop-zone', 'nc-file', 'nc-file-name');
+                setupDragAndDrop('ec-drop-zone', 'ec-new-file', 'ec-file-name-display');
+                
                 const storedUser = localStorage.getItem('d2_current_user');
                 if(storedUser) {
                     currentUser = JSON.parse(storedUser);
                     grantAccess(false);
-                } else {
-                    lucide.createIcons();
                 }
             }
         };
 
+        function setupDragAndDrop(zoneId, inputId, displayId) {
+            const zone = document.getElementById(zoneId);
+            const input = document.getElementById(inputId);
+            const display = document.getElementById(displayId);
+            if(!zone || !input) return;
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                zone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+            });
+            ['dragenter', 'dragover'].forEach(eventName => zone.addEventListener(eventName, () => zone.classList.add('drag-active'), false));
+            ['dragleave', 'drop'].forEach(eventName => zone.addEventListener(eventName, () => zone.classList.remove('drag-active'), false));
+            zone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                input.files = files;
+                if(files.length > 0 && display) {
+                    display.textContent = "Selected: " + files[0].name;
+                    display.classList.remove('hidden');
+                }
+            });
+            input.addEventListener('change', () => {
+                 if(input.files.length > 0 && display) {
+                    display.textContent = "Selected: " + input.files[0].name;
+                    display.classList.remove('hidden');
+                 }
+            });
+        }
+
         async function initPublicMode() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('public-onboard-view').classList.remove('hidden');
-            lucide.createIcons();
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await auth.signInWithCustomToken(__initial_auth_token);
             else await auth.signInAnonymously();
         }
@@ -305,7 +327,8 @@
         }
 
         async function handleLogin() {
-            const email = document.getElementById('email').value.trim().toLowerCase();
+            const emailInput = document.getElementById('email').value.trim();
+            const email = emailInput.toLowerCase(); 
             const pass = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('login-error');
             const btn = document.getElementById('btn-login');
@@ -315,8 +338,11 @@
             try {
                 if (!auth.currentUser) {
                      try {
-                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await auth.signInWithCustomToken(__initial_auth_token);
-                         else await auth.signInAnonymously();
+                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                             await auth.signInWithCustomToken(__initial_auth_token);
+                         } else {
+                             await auth.signInAnonymously();
+                         }
                      } catch(authErr) { console.error("Auth Error:", authErr); throw new Error("Connection failed. Please refresh."); }
                 }
 
@@ -324,6 +350,7 @@
                 if (email === MASTER_CREDENTIALS.user.toLowerCase() && pass === MASTER_CREDENTIALS.pass) {
                     foundUser = { email: MASTER_CREDENTIALS.user, role: 'admin', id: 'master', name: MASTER_CREDENTIALS.name };
                 } 
+                
                 if (!foundUser) {
                     const isAIPreview = typeof __app_id !== 'undefined';
                     const usersCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
@@ -343,7 +370,7 @@
 
             } catch (err) {
                 console.error(err);
-                errorDiv.textContent = err.message === "Invalid Credentials" ? "Invalid email or password." : ("Error: " + err.message);
+                errorDiv.textContent = "Invalid email or password.";
                 errorDiv.classList.remove('hidden');
                 btn.textContent = "Sign In";
                 btn.disabled = false;
@@ -374,6 +401,8 @@
                     if (linked && linked.contactName) {
                         currentUser.name = linked.contactName;
                         document.getElementById('user-name-display').textContent = currentUser.name;
+                        const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                        document.getElementById('user-initials-display').textContent = initials;
                     }
                 }
                 refreshCurrentView();
@@ -458,8 +487,10 @@
 
         function renderContractors() {
              const container = document.getElementById('content-area');
-            container.innerHTML = `<div class="flex flex-col sm:flex-row justify-between mb-6 no-print gap-4"><div class="relative w-full max-w-sm"><i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i><input type="text" id="c-search" onkeyup="filterContractors()" placeholder="Search contractors..." class="pl-10 pr-4 py-2 w-full rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base"></div><div class="flex gap-2 flex-wrap"><button onclick="copyLink()" class="flex-1 sm:flex-none bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-colors text-xs md:text-sm"><i data-lucide="share-2" class="w-4 h-4"></i> Link</button><button onclick="showAddContractorModal()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-colors text-xs md:text-sm"><i data-lucide="plus"></i> Add</button></div></div><div id="add-c-form" class="hidden bg-blue-50 border border-blue-200 p-4 md:p-6 rounded-xl mb-6"><h3 class="font-bold text-blue-900 mb-4">New Contractor Registration</h3><form id="new-c-form" class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="event.preventDefault(); return false;"><input type="text" id="nc-name" placeholder="Business Name *" required class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-contact" placeholder="Contact Person" class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-ein" placeholder="EIN / SSN *" required class="p-2 rounded border border-slate-300 w-full"><input type="email" id="nc-email" placeholder="Email" class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-phone" placeholder="Phone" class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-address" placeholder="Full Address *" required class="p-2 rounded border border-slate-300 w-full"><div class="md:col-span-2 bg-white p-3 rounded border border-dashed border-slate-400"><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Upload Initial Document (Optional)</label><input type="file" id="nc-file" accept="image/*,.pdf" class="block w-full text-sm text-slate-500"></div><div class="md:col-span-2 flex justify-end gap-2 mt-2"><button type="button" onclick="document.getElementById('add-c-form').classList.add('hidden')" class="px-4 py-2 text-slate-600 hover:bg-white rounded">Cancel</button><button type="button" id="btn-save-c" onclick="handleSaveContractor()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div></form></div><div id="c-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
+            container.innerHTML = `<div class="flex flex-col sm:flex-row justify-between mb-6 no-print gap-4"><div class="relative w-full max-w-sm"><i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i><input type="text" id="c-search" onkeyup="filterContractors()" placeholder="Search contractors..." class="pl-10 pr-4 py-2 w-full rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base"></div><div class="flex gap-2 flex-wrap"><button onclick="copyLink()" class="flex-1 sm:flex-none bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-colors text-xs md:text-sm"><i data-lucide="share-2" class="w-4 h-4"></i> Link</button><button onclick="showAddContractorModal()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm transition-colors text-xs md:text-sm"><i data-lucide="plus"></i> Add</button></div></div><div id="add-c-form" class="hidden bg-blue-50 border border-blue-200 p-4 md:p-6 rounded-xl mb-6"><h3 class="font-bold text-blue-900 mb-4">New Contractor Registration</h3><form id="new-c-form" class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="event.preventDefault(); return false;"><input type="text" id="nc-name" placeholder="Business Name *" required class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-contact" placeholder="Contact Person" class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-ein" placeholder="EIN / SSN *" required class="p-2 rounded border border-slate-300 w-full"><input type="email" id="nc-email" placeholder="Email" class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-phone" placeholder="Phone" class="p-2 rounded border border-slate-300 w-full"><input type="text" id="nc-address" placeholder="Full Address *" required class="p-2 rounded border border-slate-300 w-full"><div class="md:col-span-2 bg-white p-3 rounded border border-dashed border-slate-400" id="nc-drop-zone"><i data-lucide="upload-cloud" class="w-8 h-8 text-blue-300 mb-1 mx-auto block"></i><label class="block text-xs font-bold text-slate-500 uppercase mb-2 text-center cursor-pointer">Upload Initial Document (Optional)</label><input type="file" id="nc-file" accept="image/*,.pdf" class="block w-full text-sm text-slate-500"></div><div class="md:col-span-2 flex justify-end gap-2 mt-2"><button type="button" onclick="document.getElementById('add-c-form').classList.add('hidden')" class="px-4 py-2 text-slate-600 hover:bg-white rounded">Cancel</button><button type="button" id="btn-save-c" onclick="handleSaveContractor()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save</button></div></form></div><div id="c-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
             filterContractors(); 
+            // Drag Drop init
+            setupDragAndDrop('nc-drop-zone', 'nc-file', 'nc-file-name');
             lucide.createIcons();
         }
 
@@ -473,6 +504,7 @@
             lucide.createIcons();
         }
 
+        // --- EDIT MODAL LOGIC (MULTI-FILE & RENAME) ---
         function openEditModal(id) {
             const c = contractors.find(x => x.id === id); if(!c) return;
             document.getElementById('ec-id').value = c.id;
@@ -487,6 +519,7 @@
                 currentEditingFiles.push({ name: c.w9FileName || "Original W9", url: c.w9File, date: c.createdAt });
             }
             renderFileList();
+            setupDragAndDrop('ec-drop-zone', 'ec-new-file', 'ec-file-name-display');
             document.getElementById('edit-c-modal').classList.remove('hidden');
         }
 
@@ -502,18 +535,26 @@
         window.updateFileName = function(index, newName) { if(currentEditingFiles[index]) currentEditingFiles[index].name = newName; }
         window.deleteFileFromList = function(index) { if(!confirm("Remove this file?")) return; currentEditingFiles.splice(index, 1); renderFileList(); }
 
+        // REMOVED 'e' PARAMETER
         async function handleUpdateContractor() {
             const btn = document.getElementById('btn-update-c'); btn.disabled = true; btn.textContent = "Saving...";
             const id = document.getElementById('ec-id').value;
             const fileInput = document.getElementById('ec-new-file');
             const newFileName = document.getElementById('ec-new-filename').value;
+
             try {
                 if(fileInput.files[0]) {
                     const url = await uploadFile(fileInput.files[0]);
-                    currentEditingFiles.push({ name: newFileName || fileInput.files[0].name, url: url, date: new Date().toISOString() });
+                    currentEditingFiles.push({
+                        name: newFileName || fileInput.files[0].name,
+                        url: url,
+                        date: new Date().toISOString()
+                    });
                 }
+
                 const isAIPreview = typeof __app_id !== 'undefined';
                 const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                
                 await collectionRef.doc(id).update({
                     businessName: document.getElementById('ec-name').value,
                     contactName: document.getElementById('ec-contact').value,
@@ -524,77 +565,814 @@
                     files: currentEditingFiles,
                     w9OnFile: currentEditingFiles.length > 0 
                 });
-                closeEditModal(); showToast("Contractor Updated");
+
+                closeEditModal(); 
+                showToast("Contractor Updated");
             } catch(e) { console.error(e); alert("Error saving: " + e.message); }
             finally { btn.disabled = false; btn.textContent = "Save Changes"; }
         }
 
-        function renderPayments() {
-             const container = document.getElementById('content-area');
-            const sorted = [...payments].sort((a,b) => new Date(b.date) - new Date(a.date));
-            const today = new Date().toISOString().split('T')[0];
-            const selectedContractorId = pendingLedgerFilter || "";
-            container.innerHTML = `<div class="print-header mb-8 text-center hidden"><img src="logo-D2-HVAC-Solutions-preto.png" class="w-32 mx-auto mb-4" onerror="this.style.display='none'"><h1 class="text-3xl font-bold text-slate-900 mb-2">D2 HVAC Solutions</h1><p class="text-slate-600">Payment Ledger</p></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-1 no-print"><div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 sticky top-6"><h2 class="font-bold text-lg mb-4 text-slate-800">Log Payment</h2><form id="payment-form" class="space-y-4" onsubmit="event.preventDefault(); return false;"><div><label class="text-xs font-bold text-slate-500 uppercase">Contractor</label><select id="np-contractor" required class="w-full p-2 bg-white border border-slate-300 rounded"><option value="">Select...</option>${contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('')}</select></div><div><label class="text-xs font-bold text-slate-500 uppercase">Amount ($)</label><input type="number" step="0.01" id="np-amount" required class="w-full p-2 border border-slate-300 rounded"></div><div><label class="text-xs font-bold text-slate-500 uppercase">Date</label><input type="date" id="np-date" required class="w-full p-2 border border-slate-300 rounded" value="${today}"></div><div><label class="text-xs font-bold text-slate-500 uppercase">Method</label><select id="np-method" class="w-full p-2 bg-white border border-slate-300 rounded"><option>Check</option><option>ACH</option><option>Zelle</option><option>Cash</option><option>Credit Card</option></select></div><div><label class="text-xs font-bold text-slate-500 uppercase">Memo</label><input type="text" id="np-memo" placeholder="Invoice #..." class="w-full p-2 border border-slate-300 rounded"></div><button type="button" onclick="handleSavePayment()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700 shadow-sm">Record Payment</button></form></div></div><div class="lg:col-span-2"><div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"><div class="p-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row gap-4 items-end no-print"><div class="flex-1 w-full"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filter Contractor</label><select id="l-contractor" onchange="filterLedger(this.value)" class="w-full p-1.5 text-sm border rounded"><option value="">All Contractors</option>${contractors.map(c => `<option value="${c.id}" ${c.id === selectedContractorId ? 'selected' : ''}>${c.businessName}</option>`).join('')}</select></div><div class="w-full sm:w-auto"><button onclick="window.print()" class="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i> Print</button></div></div><div id="ledger-table-container" class="overflow-x-auto"></div></div></div></div>`;
-            window.filterLedger(selectedContractorId);
-            lucide.createIcons();
+        // REMOVED 'e' PARAMETER
+        async function handleSaveContractor() {
+            const btn = document.getElementById('btn-save-c'); btn.disabled = true; btn.textContent = "Saving...";
+            const fileInput = document.getElementById('nc-file');
+            let filesArr = [];
+            
+            try {
+                if(fileInput.files[0]) {
+                    const url = await uploadFile(fileInput.files[0]);
+                    filesArr.push({ name: "Initial Document", url: url, date: new Date().toISOString() });
+                }
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('nc-name').value,
+                    contactName: document.getElementById('nc-contact').value,
+                    ein: document.getElementById('nc-ein').value,
+                    email: document.getElementById('nc-email').value,
+                    phone: document.getElementById('nc-phone').value,
+                    address: document.getElementById('nc-address').value,
+                    files: filesArr,
+                    w9OnFile: filesArr.length > 0,
+                    createdAt: new Date().toISOString()
+                });
+                document.getElementById('add-c-form').classList.add('hidden');
+                document.getElementById('new-c-form').reset();
+                showToast("Contractor Registered");
+            } catch (err) { alert("Error: " + err.message); } 
+            finally { btn.disabled = false; btn.textContent = "Save"; }
         }
 
-        window.filterLedger = (filterId) => {
-            if(filterId !== undefined) pendingLedgerFilter = filterId;
-            const filterC = pendingLedgerFilter || "";
-            const filtered = payments.filter(p => !filterC || p.contractorId === filterC).sort((a,b) => new Date(b.date) - new Date(a.date));
-            const html = `<table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-4 py-3">Date</th><th class="px-4 py-3">Payee</th><th class="px-4 py-3">Details</th><th class="px-4 py-3 text-right">Amount</th><th class="px-4 py-3 text-center action-col">Actions</th></tr></thead><tbody class="divide-y divide-slate-100">${filtered.map(p => { const c = contractors.find(cx => cx.id === p.contractorId) || {businessName: 'Unknown'}; return `<tr class="hover:bg-slate-50"><td class="px-4 py-3 font-mono text-slate-600">${p.date}</td><td class="px-4 py-3 font-bold text-slate-800">${c.businessName}</td><td class="px-4 py-3 text-slate-500"><span class="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">${p.method}</span>${p.description ? `<span class="ml-2 text-xs opacity-75">${p.description}</span>` : ''}</td><td class="px-4 py-3 text-right font-bold text-slate-700">$${parseFloat(p.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td class="px-4 py-3 text-center action-col"><button onclick='openEditPaymentModal(${JSON.stringify(p).replace(/'/g, "&apos;")})' class="text-slate-400 hover:text-blue-600 p-1"><i data-lucide="pencil" class="w-4 h-4"></i></button></td></tr>`; }).join('')}${filtered.length === 0 ? '<tr><td colspan="5" class="p-8 text-center text-slate-400">No records found.</td></tr>' : ''}</tbody></table>`;
-            document.getElementById('ledger-table-container').innerHTML = html;
-            lucide.createIcons();
-        };
+        // REMOVED 'e' PARAMETER
+        async function handleSavePayment() {
+            const btn = document.querySelector('#payment-form button');
+            if(btn) { btn.textContent = "Saving..."; btn.disabled = true; }
 
-        // --- PAYMENT EDIT FUNCTIONS ---
-        function openEditPaymentModal(payment) {
-            if(currentUser.role === 'contractor') return;
-            document.getElementById('ep-id').value = payment.id;
-            document.getElementById('ep-date').value = payment.date;
-            document.getElementById('ep-amount').value = payment.amount;
-            document.getElementById('ep-method').value = payment.method;
-            document.getElementById('ep-memo').value = payment.description || '';
-            const select = document.getElementById('ep-contractor');
-            select.innerHTML = contractors.map(c => `<option value="${c.id}">${c.businessName}</option>`).join('');
-            select.value = payment.contractorId;
-            document.getElementById('edit-payment-modal').classList.remove('hidden');
-        }
-        function closeEditPaymentModal() { document.getElementById('edit-payment-modal').classList.add('hidden'); }
-        async function handleUpdatePayment() {
-            const id = document.getElementById('ep-id').value;
-            const data = { date: document.getElementById('ep-date').value, contractorId: document.getElementById('ep-contractor').value, amount: parseFloat(document.getElementById('ep-amount').value), method: document.getElementById('ep-method').value, description: document.getElementById('ep-memo').value };
             const isAIPreview = typeof __app_id !== 'undefined';
             const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('payments') : db.collection('payments');
-            try { await collectionRef.doc(id).update(data); closeEditPaymentModal(); showToast("Payment Updated"); } catch(err) { console.error(err); alert("Error: " + err.message); }
-        }
-        async function handleDeletePaymentFromModal() {
-            if(!confirm("Delete this payment?")) return;
-            const id = document.getElementById('ep-id').value;
-            const isAIPreview = typeof __app_id !== 'undefined';
-            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('payments') : db.collection('payments');
-            try { await collectionRef.doc(id).delete(); closeEditPaymentModal(); showToast("Payment Deleted"); } catch(err) { console.error(err); alert("Error: " + err.message); }
-        }
-        function copyLink() {
-            const url = window.location.href.split('?')[0] + "?mode=onboard";
-            navigator.clipboard.writeText(url).then(() => showToast("Copied!")).catch(() => prompt("Link:", url));
-        }
-        function showToast(msg) { const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; t.classList.remove('translate-y-20'); setTimeout(() => t.classList.add('translate-y-20'), 3000); }
-        async function uploadFile(file) {
-            if (storage) {
-                const storageRef = storage.ref();
-                const fileRef = storageRef.child(`contractors/${Date.now()}_${file.name}`);
-                const snapshot = await fileRef.put(file);
-                return await snapshot.ref.getDownloadURL();
+            
+            try {
+                await collectionRef.add({
+                    contractorId: document.getElementById('np-contractor').value,
+                    amount: parseFloat(document.getElementById('np-amount').value),
+                    date: document.getElementById('np-date').value,
+                    method: document.getElementById('np-method').value,
+                    description: document.getElementById('np-memo').value,
+                    createdAt: new Date().toISOString()
+                });
+                
+                document.getElementById('payment-form').reset();
+                document.getElementById('np-date').value = new Date().toISOString().split('T')[0];
+                
+                showToast("Payment Recorded");
+                
+                if(window.currentView === 'payments') renderPayments();
+            } catch (err) {
+                console.error(err);
+                alert("Error saving payment: " + err.message);
+            } finally {
+                if(btn) { btn.textContent = "Record Payment"; btn.disabled = false; }
             }
-            if (file.size > 950 * 1024) throw new Error("File too large. Setup Storage.");
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
+        }
+
+        // REMOVED 'e' PARAMETER
+        async function handlePublicSubmit() {
+            const btn = document.getElementById('btn-public-submit');
+            btn.textContent = "Submitting...";
+            btn.disabled = true;
+            const fileInput = document.getElementById('pb-file');
+            let filesArr = [];
+            try {
+                if(fileInput.files[0]) {
+                    const url = await uploadFile(fileInput.files[0]);
+                    filesArr.push({ name: "Uploaded W9", url: url, date: new Date().toISOString() });
+                }
+                const isAIPreview = typeof __app_id !== 'undefined';
+                const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+                await collectionRef.add({
+                    businessName: document.getElementById('pb-name').value,
+                    contactName: document.getElementById('pb-contact').value,
+                    ein: document.getElementById('pb-ein').value,
+                    email: document.getElementById('pb-email').value,
+                    phone: document.getElementById('pb-phone').value,
+                    address: document.getElementById('pb-address').value,
+                    files: filesArr,
+                    w9OnFile: filesArr.length > 0,
+                    createdAt: new Date().toISOString(),
+                    source: 'public_link'
+                });
+                document.getElementById('public-form').classList.add('hidden');
+                document.getElementById('public-success').classList.remove('hidden');
+            } catch (err) { alert("Error: " + err.message); btn.textContent = "Submit Registration"; btn.disabled = false; }
+        }
+
+        // ... rest of utils ...
+        async function handleDeleteFromModal() {
+            const id = document.getElementById('ec-id').value;
+            if(!confirm("Are you sure?")) return;
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const collectionRef = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('contractors') : db.collection('contractors');
+            await collectionRef.doc(id).delete();
+            closeEditModal();
+            showToast("Deleted");
+        }
+        async function deleteUser(id) {
+             if(!confirm("Remove User?")) return;
+             const isAIPreview = typeof __app_id !== 'undefined';
+             const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+             await uCollection.doc(id).delete();
+             showToast("User Removed");
+        }
+        // REMOVED 'e' PARAMETER
+        async function handleSaveUser() {
+            const id = document.getElementById('um-id').value;
+            const name = document.getElementById('um-name').value;
+            const email = document.getElementById('um-email').value;
+            const pass = document.getElementById('um-pass').value;
+            const role = document.getElementById('um-role').value;
+            const linkedId = document.getElementById('um-contractor-link').value;
+            if (role === 'contractor' && !linkedId) return alert("Please select a Contractor profile.");
+            const isAIPreview = typeof __app_id !== 'undefined';
+            const uCollection = isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data').collection('app_users') : db.collection('app_users');
+            const data = { name: name, email: email, password: btoa(pass), role: role, linkedContractorId: linkedId || null, updatedAt: new Date().toISOString() };
+            try {
+                if(id) await uCollection.doc(id).update(data); else await uCollection.add({...data, createdAt: new Date().toISOString()});
+                closeUserModal(); showToast(id ? "User Updated" : "User Created");
+            } catch(err) { alert(err.message); }
+        }
+
+
+        // ============================================================
+        // RESTORED MODULES: Payments, Reports, Users & Contractor Portal
+        // ============================================================
+
+        function getRootRef() {
+            const isAIPreview = typeof __app_id !== 'undefined';
+            return isAIPreview ? db.collection('artifacts').doc(appId).collection('public').doc('data') : db;
+        }
+
+        function safeDateStr(d) {
+            if (!d) return "";
+            if (typeof d === "string") return d;
+            if (d.toDate) return d.toDate().toISOString().split("T")[0];
+            if (typeof d.seconds === "number") return new Date(d.seconds * 1000).toISOString().split("T")[0];
+            try { return new Date(d).toISOString().split("T")[0]; } catch(e) { return String(d); }
+        }
+
+        function money(n) {
+            const num = Number.parseFloat(n || 0);
+            if (Number.isNaN(num)) return "$0.00";
+            return "$" + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function getContractorNameById(id) {
+            const c = contractors.find(x => x.id === id);
+            return c ? (c.businessName || c.contactName || "Contractor") : "Unknown";
+        }
+
+        function populateContractorSelect(selectEl, { includeAll = false, selectedId = "" } = {}) {
+            if (!selectEl) return;
+            const options = [];
+            if (includeAll) options.push(`<option value="">All Contractors</option>`);
+            contractors
+                .slice()
+                .sort((a, b) => (a.businessName || "").localeCompare((b.businessName || "")))
+                .forEach(c => options.push(`<option value="${c.id}" ${c.id === selectedId ? "selected" : ""}>${c.businessName || "Unnamed Contractor"}</option>`));
+            selectEl.innerHTML = options.join("");
+        }
+
+        // ----------------------------
+        // PAYMENTS (Ledger + CRUD)
+        // ----------------------------
+
+        function renderPayments() {
+            const container = document.getElementById('content-area');
+            const isFiltered = !!pendingLedgerFilter;
+            const filteredName = isFiltered ? getContractorNameById(pendingLedgerFilter) : "";
+
+            // Contractor users should never see the global ledger
+            if (currentUser && currentUser.role === 'contractor') {
+                router('my-profile');
+                return;
+            }
+
+            const sorted = payments
+                .slice()
+                .sort((a, b) => new Date(safeDateStr(b.date) || b.createdAt || 0) - new Date(safeDateStr(a.date) || a.createdAt || 0));
+
+            const list = isFiltered ? sorted.filter(p => p.contractorId === pendingLedgerFilter) : sorted;
+
+            const total = list.reduce((acc, p) => acc + (Number.parseFloat(p.amount) || 0), 0);
+
+            const rows = list.map(p => {
+                const cName = getContractorNameById(p.contractorId);
+                const d = safeDateStr(p.date);
+                const amt = money(p.amount);
+                const method = p.method || "-";
+                const memo = (p.description || p.memo || "").toString();
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-3 px-3 text-sm text-slate-600 whitespace-nowrap">${d || "-"}</td>
+                        <td class="py-3 px-3 text-sm font-semibold text-slate-800">${cName}</td>
+                        <td class="py-3 px-3 text-sm font-bold text-slate-800 whitespace-nowrap">${amt}</td>
+                        <td class="py-3 px-3 text-sm text-slate-600 whitespace-nowrap">${method}</td>
+                        <td class="py-3 px-3 text-sm text-slate-600 max-w-[280px] truncate" title="${memo.replaceAll('"', '&quot;')}">${memo || "-"}</td>
+                        <td class="py-3 px-3 text-sm text-slate-600 action-col whitespace-nowrap">
+                            <button type="button" onclick="openEditPaymentModal('${p.id}')" class="text-blue-600 hover:bg-blue-50 px-2 py-1 rounded font-bold text-xs">Edit</button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            container.innerHTML = `
+                <div class="no-print flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">Payment Ledger</h3>
+                        <p class="text-sm text-slate-500">Track and manage contractor payouts.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="window.print()" class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-2 rounded-lg font-bold flex items-center gap-2 shadow-sm text-xs md:text-sm">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Print
+                        </button>
+                    </div>
+                </div>
+
+                ${isFiltered ? `
+                    <div class="mb-5 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-blue-600 text-white rounded-lg"><i data-lucide="filter" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-xs font-bold text-blue-900 uppercase tracking-wider">Filtered Contractor</p>
+                                <p class="font-bold text-slate-800">${filteredName}</p>
+                            </div>
+                        </div>
+                        <button onclick="pendingLedgerFilter=null; router('payments')" class="text-blue-700 font-bold text-sm hover:underline">Clear</button>
+                    </div>
+                ` : ""}
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 no-print">
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> Record a Payment</h4>
+                    <form id="payment-form" class="grid grid-cols-1 md:grid-cols-6 gap-3" onsubmit="event.preventDefault(); return false;">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Contractor</label>
+                            <select id="np-contractor" required class="w-full p-2 border border-slate-300 rounded bg-white"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
+                            <input type="date" id="np-date" required class="w-full p-2 border border-slate-300 rounded">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount</label>
+                            <input type="number" step="0.01" id="np-amount" required placeholder="0.00" class="w-full p-2 border border-slate-300 rounded">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Method</label>
+                            <select id="np-method" class="w-full p-2 border border-slate-300 rounded bg-white">
+                                <option>Check</option><option>ACH</option><option>Zelle</option><option>Cash</option><option>Credit Card</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-6">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Memo</label>
+                            <input type="text" id="np-memo" placeholder="Optional" class="w-full p-2 border border-slate-300 rounded">
+                        </div>
+                        <div class="md:col-span-6 flex justify-end">
+                            <button type="button" onclick="handleSavePayment()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold shadow-sm">Record Payment</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-green-100 text-green-700 rounded-lg"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total in View</p>
+                                <p class="text-lg font-bold text-slate-800">${money(total)}</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-500">${list.length} payment(s)</div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                                <tr>
+                                    <th class="py-3 px-3">Date</th>
+                                    <th class="py-3 px-3">Contractor</th>
+                                    <th class="py-3 px-3">Amount</th>
+                                    <th class="py-3 px-3">Method</th>
+                                    <th class="py-3 px-3">Memo</th>
+                                    <th class="py-3 px-3 action-col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows || `<tr><td colspan="6" class="py-10 text-center text-slate-400">No payments found.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            // initialize form defaults
+            const contractorSelect = document.getElementById('np-contractor');
+            populateContractorSelect(contractorSelect, { selectedId: pendingLedgerFilter || "" });
+            const dateInput = document.getElementById('np-date');
+            if (dateInput && !dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+
+            lucide.createIcons();
+        }
+
+        function openEditPaymentModal(paymentId) {
+            const p = payments.find(x => x.id === paymentId);
+            if (!p) return;
+
+            const contractorSelect = document.getElementById('ep-contractor');
+            populateContractorSelect(contractorSelect, { selectedId: p.contractorId });
+
+            document.getElementById('ep-id').value = p.id;
+            document.getElementById('ep-date').value = safeDateStr(p.date) || new Date().toISOString().split('T')[0];
+            document.getElementById('ep-amount').value = Number.parseFloat(p.amount || 0);
+            document.getElementById('ep-method').value = p.method || "Check";
+            document.getElementById('ep-memo').value = (p.description || p.memo || "");
+
+            document.getElementById('edit-payment-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        async function handleUpdatePayment() {
+            const btn = document.getElementById('btn-update-p');
+            if (btn) { btn.disabled = true; btn.textContent = "Saving..."; }
+
+            const id = document.getElementById('ep-id').value;
+            if (!id) return;
+
+            try {
+                const payload = {
+                    date: document.getElementById('ep-date').value,
+                    contractorId: document.getElementById('ep-contractor').value,
+                    amount: Number.parseFloat(document.getElementById('ep-amount').value || 0),
+                    method: document.getElementById('ep-method').value,
+                    description: document.getElementById('ep-memo').value,
+                    updatedAt: new Date().toISOString()
+                };
+
+                await getRootRef().collection('payments').doc(id).update(payload);
+
+                closeEditPaymentModal();
+                showToast("Payment Updated");
+            } catch (err) {
+                console.error(err);
+                alert("Error updating payment: " + err.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = "Save"; }
+            }
+        }
+
+        async function handleDeletePaymentFromModal() {
+            const id = document.getElementById('ep-id').value;
+            if (!id) return;
+            if (!confirm("Delete this payment?")) return;
+
+            try {
+                await getRootRef().collection('payments').doc(id).delete();
+                closeEditPaymentModal();
+                showToast("Payment Deleted");
+            } catch (err) {
+                console.error(err);
+                alert("Error deleting payment: " + err.message);
+            }
+        }
+
+        // ----------------------------
+        // REPORTS (Compliance + 1099)
+        // ----------------------------
+
+        function renderReports() {
+            const container = document.getElementById('content-area');
+
+            // Contractor users should never see reports
+            if (currentUser && currentUser.role === 'contractor') {
+                router('my-profile');
+                return;
+            }
+
+            const currentYear = new Date().getFullYear();
+            const yearSelectId = "rp-year";
+
+            const selectedYear = window.__reportsYear || currentYear;
+            const yearStr = String(selectedYear);
+
+            const yearPayments = payments.filter(p => safeDateStr(p.date).startsWith(yearStr));
+
+            const totalsByContractor = {};
+            yearPayments.forEach(p => {
+                const cid = p.contractorId || "unknown";
+                totalsByContractor[cid] = (totalsByContractor[cid] || 0) + (Number.parseFloat(p.amount) || 0);
             });
+
+            const rows = Object.entries(totalsByContractor)
+                .map(([cid, total]) => {
+                    const c = contractors.find(x => x.id === cid);
+                    const name = c ? (c.businessName || "Unnamed Contractor") : "Unknown";
+                    const hasFiles = !!(c && (c.w9OnFile || (c.files && c.files.length)));
+                    const eligible1099 = total >= 600;
+                    return { cid, name, total, hasFiles, eligible1099 };
+                })
+                .sort((a, b) => b.total - a.total);
+
+            const totalPaid = rows.reduce((acc, r) => acc + r.total, 0);
+            const eligibleCount = rows.filter(r => r.eligible1099).length;
+
+            const missingW9List = contractors
+                .filter(c => !(c.w9OnFile || (c.files && c.files.length)))
+                .slice()
+                .sort((a, b) => (a.businessName || "").localeCompare((b.businessName || "")));
+
+            container.innerHTML = `
+                <div class="no-print flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">Financial Reports</h3>
+                        <p class="text-sm text-slate-500">1099 totals & compliance overview.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="bg-white border border-slate-200 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+                            <select id="${yearSelectId}" class="text-sm font-bold text-slate-700 bg-transparent outline-none">
+                                ${[currentYear, currentYear-1, currentYear-2].map(y => `<option value="${y}" ${y === selectedYear ? "selected" : ""}>${y}</option>`).join("")}
+                            </select>
+                        </div>
+                        <button onclick="window.print()" class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-2 rounded-lg font-bold flex items-center gap-2 shadow-sm text-xs md:text-sm">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Print
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                        <div class="p-3 bg-green-100 text-green-700 rounded-full"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Total Paid (${selectedYear})</p>
+                            <p class="text-2xl font-bold text-slate-800">${money(totalPaid)}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                        <div class="p-3 bg-purple-100 text-purple-700 rounded-full"><i data-lucide="file-text" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase">1099 Eligible (≥ $600)</p>
+                            <p class="text-2xl font-bold text-slate-800">${eligibleCount}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                        <div class="p-3 bg-red-100 text-red-700 rounded-full"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Missing W9 / Docs</p>
+                            <p class="text-2xl font-bold text-slate-800">${missingW9List.length}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i data-lucide="bar-chart-3" class="w-5 h-5"></i></div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">1099 Summary</p>
+                                    <p class="font-bold text-slate-800">${selectedYear}</p>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-500">${rows.length} contractor(s)</div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                                    <tr>
+                                        <th class="py-3 px-3">Contractor</th>
+                                        <th class="py-3 px-3">Total</th>
+                                        <th class="py-3 px-3">1099</th>
+                                        <th class="py-3 px-3">Docs</th>
+                                        <th class="py-3 px-3 action-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows.map(r => `
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="py-3 px-3 font-semibold text-slate-800">${r.name}</td>
+                                            <td class="py-3 px-3 font-bold text-slate-800 whitespace-nowrap">${money(r.total)}</td>
+                                            <td class="py-3 px-3">
+                                                ${r.eligible1099 ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">Eligible</span>` : `<span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-full text-xs font-bold">—</span>`}
+                                            </td>
+                                            <td class="py-3 px-3">
+                                                ${r.hasFiles ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">On File</span>` : `<span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">Missing</span>`}
+                                            </td>
+                                            <td class="py-3 px-3 action-col whitespace-nowrap">
+                                                <button onclick="goToPaymentLedger('${r.cid}')" class="text-blue-600 hover:bg-blue-50 px-2 py-1 rounded font-bold text-xs">View Ledger</button>
+                                            </td>
+                                        </tr>
+                                    `).join("") || `<tr><td colspan="5" class="py-10 text-center text-slate-400">No payments found for ${selectedYear}.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex items-center gap-3">
+                            <div class="p-2 bg-orange-100 text-orange-700 rounded-lg"><i data-lucide="folder-x" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Compliance</p>
+                                <p class="font-bold text-slate-800">Missing Documents</p>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-2 max-h-[420px] overflow-y-auto">
+                            ${missingW9List.map(c => `
+                                <div class="flex items-center justify-between gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-slate-800 truncate">${c.businessName || "Unnamed Contractor"}</p>
+                                        <p class="text-xs text-slate-500 truncate">${c.ein || ""}</p>
+                                    </div>
+                                    <button onclick="openEditModal('${c.id}')" class="text-blue-600 hover:underline text-xs font-bold whitespace-nowrap">Fix</button>
+                                </div>
+                            `).join("") || `<p class="text-center text-slate-400 py-8">All set. No missing documents.</p>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const yearSelect = document.getElementById(yearSelectId);
+            if (yearSelect) {
+                yearSelect.addEventListener('change', () => {
+                    window.__reportsYear = Number.parseInt(yearSelect.value, 10);
+                    renderReports();
+                });
+            }
+
+            lucide.createIcons();
+        }
+
+        // ----------------------------
+        // USERS & ACCESS (Admin only)
+        // ----------------------------
+
+        function toggleContractorSelect() {
+            const role = document.getElementById('um-role')?.value;
+            const div = document.getElementById('um-contractor-div');
+            if (!div) return;
+            if (role === 'contractor') div.classList.remove('hidden');
+            else div.classList.add('hidden');
+        }
+
+        function openUserModal(id = "") {
+            const modal = document.getElementById('user-modal');
+            const title = document.getElementById('um-title');
+            const user = id ? appUsers.find(u => u.id === id) : null;
+
+            document.getElementById('um-id').value = id || "";
+            document.getElementById('um-name').value = user?.name || "";
+            document.getElementById('um-email').value = user?.email || "";
+            document.getElementById('um-pass').value = user?.password ? atob(user.password) : "";
+            document.getElementById('um-role').value = user?.role || "employee";
+
+            // populate contractor link list
+            const select = document.getElementById('um-contractor-link');
+            populateContractorSelect(select, { includeAll: false, selectedId: user?.linkedContractorId || "" });
+            // include empty option at top
+            select.insertAdjacentHTML('afterbegin', `<option value="">Select Contractor...</option>`);
+            if (user?.linkedContractorId) select.value = user.linkedContractorId;
+
+            toggleContractorSelect();
+
+            if (title) title.textContent = id ? "Edit User" : "Add User";
+            if (modal) modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('content-area');
+
+            if (!currentUser || currentUser.role !== 'admin') {
+                container.innerHTML = `<div class="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
+                    <i data-lucide="shield-alert" class="w-10 h-10 mx-auto mb-3 text-slate-400"></i>
+                    <p class="font-bold text-slate-800 mb-1">Access Restricted</p>
+                    <p class="text-sm">Only admins can manage users.</p>
+                </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            const rows = appUsers
+                .slice()
+                .sort((a, b) => (a.name || "").localeCompare((b.name || "")))
+                .map(u => {
+                    const linked = u.linkedContractorId ? getContractorNameById(u.linkedContractorId) : "-";
+                    const role = (u.role || "employee");
+                    const updated = safeDateStr(u.updatedAt || u.createdAt);
+                    return `
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-3 px-3">
+                                <div class="font-bold text-slate-800">${u.name || "-"}</div>
+                                <div class="text-xs text-slate-500">${u.email || "-"}</div>
+                            </td>
+                            <td class="py-3 px-3 text-sm font-bold text-slate-700 capitalize">${role}</td>
+                            <td class="py-3 px-3 text-sm text-slate-600">${linked}</td>
+                            <td class="py-3 px-3 text-sm text-slate-600 whitespace-nowrap">${updated || "-"}</td>
+                            <td class="py-3 px-3 action-col whitespace-nowrap">
+                                <button onclick="openUserModal('${u.id}')" class="text-blue-600 hover:bg-blue-50 px-2 py-1 rounded font-bold text-xs">Edit</button>
+                                <button onclick="deleteUser('${u.id}')" class="text-red-600 hover:bg-red-50 px-2 py-1 rounded font-bold text-xs">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join("");
+
+            container.innerHTML = `
+                <div class="no-print flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">Users & Access</h3>
+                        <p class="text-sm text-slate-500">Create users and control roles.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openUserModal('')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold shadow-sm flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Add User
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                                <tr>
+                                    <th class="py-3 px-3">User</th>
+                                    <th class="py-3 px-3">Role</th>
+                                    <th class="py-3 px-3">Linked Contractor</th>
+                                    <th class="py-3 px-3">Updated</th>
+                                    <th class="py-3 px-3 action-col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows || `<tr><td colspan="5" class="py-10 text-center text-slate-400">No users found.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            lucide.createIcons();
+        }
+
+        // --------------------------------
+        // CONTRACTOR PORTAL (My Profile)
+        // --------------------------------
+
+        function renderContractorPortal() {
+            const container = document.getElementById('content-area');
+
+            if (!currentUser || currentUser.role !== 'contractor') {
+                container.innerHTML = `<div class="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
+                    <i data-lucide="user" class="w-10 h-10 mx-auto mb-3 text-slate-400"></i>
+                    <p class="font-bold text-slate-800 mb-1">Contractor Portal</p>
+                    <p class="text-sm">Log in with a contractor account to access this page.</p>
+                </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            const cid = currentUser.linkedContractorId;
+            const c = contractors.find(x => x.id === cid);
+
+            if (!cid || !c) {
+                container.innerHTML = `<div class="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
+                    <i data-lucide="alert-triangle" class="w-10 h-10 mx-auto mb-3 text-slate-400"></i>
+                    <p class="font-bold text-slate-800 mb-1">Profile Not Linked</p>
+                    <p class="text-sm">This account is not linked to a contractor profile yet. Please contact D2 HVAC Solutions.</p>
+                </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            const myPayments = payments
+                .filter(p => p.contractorId === cid)
+                .slice()
+                .sort((a, b) => new Date(safeDateStr(b.date) || b.createdAt || 0) - new Date(safeDateStr(a.date) || a.createdAt || 0));
+
+            const total = myPayments.reduce((acc, p) => acc + (Number.parseFloat(p.amount) || 0), 0);
+
+            const files = (c.files || []).slice().sort((a, b) => (safeDateStr(b.date) || "").localeCompare(safeDateStr(a.date) || ""));
+
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-slate-800">My Profile</h3>
+                    <p class="text-sm text-slate-500">View your documents and payment history.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-3 bg-blue-100 text-blue-700 rounded-xl"><i data-lucide="building-2" class="w-6 h-6"></i></div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-slate-500 uppercase">Business</p>
+                                <p class="font-bold text-slate-800 truncate">${c.businessName || "-"}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-slate-600">
+                            <div class="flex justify-between gap-2"><span class="font-bold text-slate-500">Contact</span><span class="text-right">${c.contactName || "-"}</span></div>
+                            <div class="flex justify-between gap-2"><span class="font-bold text-slate-500">EIN/SSN</span><span class="text-right font-mono">${c.ein || "-"}</span></div>
+                            <div class="flex justify-between gap-2"><span class="font-bold text-slate-500">Phone</span><span class="text-right">${c.phone || "-"}</span></div>
+                            <div class="flex justify-between gap-2"><span class="font-bold text-slate-500">Email</span><span class="text-right">${c.email || "-"}</span></div>
+                            <div class="pt-3 mt-3 border-t border-slate-100">
+                                <p class="text-xs font-bold text-slate-500 uppercase">Total Payments</p>
+                                <p class="text-2xl font-bold text-slate-800">${money(total)}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-purple-100 text-purple-700 rounded-lg"><i data-lucide="folder-open" class="w-5 h-5"></i></div>
+                            <h4 class="font-bold text-slate-800">Documents</h4>
+                        </div>
+                        <div class="space-y-2 max-h-[420px] overflow-y-auto">
+                            ${files.map(f => `
+                                <a href="${f.url}" target="_blank" class="block p-3 bg-slate-50 rounded-lg border border-slate-100 hover:bg-white transition">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-slate-800 truncate">${f.name || "Document"}</p>
+                                            <p class="text-xs text-slate-500">${safeDateStr(f.date) || ""}</p>
+                                        </div>
+                                        <i data-lucide="external-link" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                                    </div>
+                                </a>
+                            `).join("") || `<p class="text-center text-slate-400 py-10">No documents uploaded yet.</p>`}
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-green-100 text-green-700 rounded-lg"><i data-lucide="receipt" class="w-5 h-5"></i></div>
+                            <h4 class="font-bold text-slate-800">Payment History</h4>
+                        </div>
+                        <div class="space-y-2 max-h-[420px] overflow-y-auto">
+                            ${myPayments.map(p => `
+                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                    <div class="flex items-center justify-between">
+                                        <p class="font-bold text-slate-800">${money(p.amount)}</p>
+                                        <p class="text-xs text-slate-500">${safeDateStr(p.date) || "-"}</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1">${p.method || ""}${(p.description || p.memo) ? " • " + (p.description || p.memo) : ""}</p>
+                                </div>
+                            `).join("") || `<p class="text-center text-slate-400 py-10">No payments recorded yet.</p>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            lucide.createIcons();
+        }
+
+        // ----------------------------
+        // OTHER MISSING UTILITIES
+        // ----------------------------
+
+        async function copyLink() {
+            const base = window.location.origin + window.location.pathname;
+            const link = base + "?mode=onboard";
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(link);
+                    showToast("Onboarding link copied");
+                } else {
+                    const tmp = document.createElement('input');
+                    tmp.value = link;
+                    document.body.appendChild(tmp);
+                    tmp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tmp);
+                    showToast("Onboarding link copied");
+                }
+            } catch (e) {
+                console.error(e);
+                prompt("Copy this onboarding link:", link);
+            }
+        }
+
+        // --- GLOBAL UI HELPERS ---
+        function closeEditModal() {
+            const modal = document.getElementById('edit-c-modal');
+            if(modal) modal.classList.add('hidden');
+        }
+        function closeUserModal() {
+            const modal = document.getElementById('user-modal');
+            if(modal) modal.classList.add('hidden');
+        }
+        function closeEditPaymentModal() {
+            const modal = document.getElementById('edit-payment-modal');
+            if(modal) modal.classList.add('hidden');
+        }
+        function showToast(message = "Success", duration = 3000) {
+            const toast = document.getElementById("toast");
+            const msg = document.getElementById("toast-msg");
+            if (!toast || !msg) return;
+            msg.textContent = message;
+            toast.classList.remove("translate-y-20");
+            setTimeout(() => toast.classList.add("translate-y-20"), duration);
         }
     </script>
 </body>
